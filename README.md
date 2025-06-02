@@ -1,8 +1,18 @@
-## 프로젝트
+## 항해 플러스 서버 구축 - 콘서트 예약 시스템 
 
-## Getting Started
+#### [마일스톤](https://github.com/users/ardbek/projects/2)
 
-### Prerequisites
+#### [요구사항정의](docs/요구사항_명세.md)
+
+#### [ERD 다이어그램](docs/ERD.md)
+
+#### [시퀀스 다이어그램](docs/시퀀스_다이어그램.md)
+
+#### [인프라 구성도](docs/인프라_구성도.md)
+
+#### [API 명세서](docs/API_명세서.md)
+
+
 
 #### Running Docker Containers
 
