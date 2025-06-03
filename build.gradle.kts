@@ -38,6 +38,13 @@ dependencies {
     // DB
 	runtimeOnly("com.mysql:mysql-connector-j")
 
+	// Lombok ✅ 추가
+	compileOnly("org.projectlombok:lombok:1.18.30")
+	annotationProcessor("org.projectlombok:lombok:1.18.30")
+
+	testCompileOnly("org.projectlombok:lombok:1.18.30")
+	testAnnotationProcessor("org.projectlombok:lombok:1.18.30")
+
     // Test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.springframework.boot:spring-boot-testcontainers")
@@ -47,6 +54,7 @@ dependencies {
 
 	// Swagger UI
 	implementation ("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
+
 }
 
 tasks.withType<Test> {
