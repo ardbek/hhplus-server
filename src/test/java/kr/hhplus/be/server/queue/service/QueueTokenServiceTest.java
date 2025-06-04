@@ -37,8 +37,7 @@ public class QueueTokenServiceTest {
     void issue_token_success() {
         // given
         Long userId = 1L;
-        given(queueTokenRepository.existsByUserIdAndStatus(userId, TokenStatus.WAITING)).willReturn(
-            false);
+        given(queueTokenRepository.existsByUserIdAndStatus(userId, TokenStatus.WAITING)).willReturn(false);
         given(queueTokenRepository.findMaxPosition()).willReturn(Optional.of(10));
 
         // when
