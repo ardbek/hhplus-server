@@ -39,7 +39,7 @@ public class WalletServiceTest {
 
     @Test
     @DisplayName("잔액을 정상적으로 조회한다")
-    void getUserPoint() {
+    void getUserPoint_success() {
         //given
         Long walletId = 1L;
         Long userId = 1L;

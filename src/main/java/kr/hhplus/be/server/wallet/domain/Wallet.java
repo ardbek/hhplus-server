@@ -50,4 +50,10 @@ public class Wallet extends BaseTimeEntity {
 
     }
 
+    public void deduct(long amount) {
+        if (balance < amount) {
+            throw new IllegalStateException("잔액 부족");
+        }
+        this.balance -= amount;
+    }
 }
