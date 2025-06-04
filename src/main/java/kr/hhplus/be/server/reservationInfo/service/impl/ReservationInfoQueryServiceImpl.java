@@ -1,9 +1,8 @@
 package kr.hhplus.be.server.reservationInfo.service.impl;
 
-import static kr.hhplus.be.server.reservation.domain.ReservationStatus.reservedStatuses;
-
 import java.time.LocalDate;
 import java.util.List;
+import kr.hhplus.be.server.reservation.domain.ReservationStatus;
 import kr.hhplus.be.server.reservationInfo.domain.Seat;
 import kr.hhplus.be.server.reservationInfo.repository.ConcertScheduleRepository;
 import kr.hhplus.be.server.reservationInfo.repository.ReservationInfoRepository;
@@ -41,7 +40,7 @@ public class ReservationInfoQueryServiceImpl implements ReservationInfoQueryServ
      */
     @Override
     public List<Seat> getAvailableSeats(Long scheduleId) {
-        List<Long> reservedIds = reservationInfoRepository.findByReservedSeatIds(scheduleId, reservedStatuses());;
+        List<Long> reservedIds = reservationInfoRepository.findByReservedSeatIds(scheduleId, ReservationStatus.reservedStatuses());;
         return seatRepository.findByConcertScheduleId(scheduleId).stream()
                 .filter(seat -> !reservedIds.contains(seat.getId()))
                 .toList();
