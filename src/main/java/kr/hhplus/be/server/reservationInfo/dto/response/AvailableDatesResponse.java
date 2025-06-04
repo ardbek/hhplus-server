@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.reservation.dto.response;
+package kr.hhplus.be.server.reservationInfo.dto.response;
 
 import java.time.LocalDate;
 import java.util.List;

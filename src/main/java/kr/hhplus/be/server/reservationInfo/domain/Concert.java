@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.reservation.domain;
+package kr.hhplus.be.server.reservationInfo.domain;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
