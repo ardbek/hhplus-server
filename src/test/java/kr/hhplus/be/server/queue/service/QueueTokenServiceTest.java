@@ -16,6 +16,8 @@ import kr.hhplus.be.server.queue.exception.AlreadyInQueueException;
 import kr.hhplus.be.server.queue.exception.TokenNotFoundException;
 import kr.hhplus.be.server.queue.repository.QueueTokenRepository;
 import kr.hhplus.be.server.queue.service.impl.QueueTokenServiceImpl;
+import kr.hhplus.be.server.user.domain.User;
+import kr.hhplus.be.server.user.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,6 +31,9 @@ public class QueueTokenServiceTest {
     @Mock
     QueueTokenRepository queueTokenRepository;
 
+    @Mock
+    UserRepository userRepository;
+
     @InjectMocks
     QueueTokenServiceImpl queueTokenServiceImpl;
 
@@ -37,16 +42,16 @@ public class QueueTokenServiceTest {
     void issue_token_success() {
         // given
         Long userId = 1L;
-        given(queueTokenRepository.existsByUserIdAndStatus(userId, TokenStatus.WAITING)).willReturn(false);
-        given(queueTokenRepository.findMaxPosition()).willReturn(Optional.of(10));
+        User user = User.builder().id(1L).build();
+        given(queueTokenRepository.existsByUserAndStatus(user, TokenStatus.WAITING)).willReturn(false);
+        given(userRepository.findById(userId)).willReturn(Optional.of(user));
 
         // when
-        QueueTokenIssueResponse response = queueTokenServiceImpl.issueToken(userId);
+        QueueToken token = queueTokenServiceImpl.issueToken(userId);
 
         // then
-        assertThat(response.userId()).isEqualTo(userId);
-        assertThat(response.position()).isEqualTo(11);
-        assertThat(response.status()).isEqualTo(TokenStatus.WAITING.name());
+        assertThat(token.getUser().getId()).isEqualTo(userId);
+        assertThat(token.getStatus()).isEqualTo(TokenStatus.WAITING);
     }
 
     @Test
@@ -54,8 +59,9 @@ public class QueueTokenServiceTest {
     void issue_token_fail_duplicateUser() {
         // given
         Long userId = 1L;
-        given(queueTokenRepository.existsByUserIdAndStatus(userId, TokenStatus.WAITING)).willReturn(
-            true);
+        User user = User.builder().id(1L).build();
+        given(userRepository.findById(userId)).willReturn(Optional.of(user));
+        given(queueTokenRepository.existsByUserAndStatus(user, TokenStatus.WAITING)).willReturn(true);
 
         // when
         Throwable throwable = catchThrowable(() -> queueTokenServiceImpl.issueToken(userId));
@@ -72,23 +78,80 @@ public class QueueTokenServiceTest {
         // given
         String token = UUID.randomUUID().toString();
         QueueToken queueToken = QueueToken.builder()
-            .userId(1L)
+            .user(null)
             .token(token)
-            .position(5)
             .status(TokenStatus.WAITING)
             .issuedAt(LocalDateTime.now())
             .build();
 
         given(queueTokenRepository.findByToken(token)).willReturn(Optional.of(queueToken));
 
+        given(queueTokenRepository.countByStatusAndCreatedAtBefore(
+                TokenStatus.WAITING, queueToken.getIssuedAt()
+        )).willReturn(6);
+
         // when
         QueueStatusResponse response = queueTokenServiceImpl.checkStatus(token);
 
         // then
-        assertThat(response.position()).isEqualTo(5);
+        assertThat(response.position()).isEqualTo(7);
         assertThat(response.status()).isEqualTo(TokenStatus.WAITING.name());
 
     }
+
+    @Test
+    @DisplayName("내 순번이 입장 가능 구간이면 상태가 ACTIVE로 바뀐다.")
+    void checkStatus_activeTransition() {
+        // given
+        String token = UUID.randomUUID().toString();
+        QueueToken queueToken = QueueToken.builder()
+                .user(null)
+                .token(token)
+                .status(TokenStatus.WAITING)
+                .issuedAt(LocalDateTime.now())
+                .build();
+
+        given(queueTokenRepository.findByToken(token)).willReturn(Optional.of(queueToken));
+        // position 3 (입장가능 범위)
+        given(queueTokenRepository.countByStatusAndCreatedAtBefore(
+                TokenStatus.WAITING, queueToken.getIssuedAt()
+        )).willReturn(2);
+
+        // when
+        QueueStatusResponse response = queueTokenServiceImpl.checkStatus(token);
+
+        // then
+        assertThat(queueToken.getStatus()).isEqualTo(TokenStatus.ACTIVE); // 실제 객체 상태 검증
+        assertThat(response.status()).isEqualTo(TokenStatus.ACTIVE.name()); // 응답 상태도 ACTIVE
+        assertThat(response.position()).isEqualTo(3);
+    }
+
+    @Test
+    @DisplayName("내 순번이 입장 가능 구간이 아니면 토큰 상태가 WAITING을 유지한다.")
+    void checkStatus_statusIsStillWaiting() {
+        // given
+        String token = UUID.randomUUID().toString();
+        QueueToken queueToken = QueueToken.builder()
+                .user(null)
+                .token(token)
+                .status(TokenStatus.WAITING)
+                .issuedAt(LocalDateTime.now())
+                .build();
+
+        given(queueTokenRepository.findByToken(token)).willReturn(Optional.of(queueToken));
+        given(queueTokenRepository.countByStatusAndCreatedAtBefore(
+                TokenStatus.WAITING, queueToken.getIssuedAt()
+        )).willReturn(6);
+
+        // when
+        QueueStatusResponse response = queueTokenServiceImpl.checkStatus(token);
+
+        // then
+        assertThat(queueToken.getStatus()).isEqualTo(TokenStatus.WAITING);
+        assertThat(response.status()).isEqualTo(TokenStatus.WAITING.name());
+        assertThat(response.position()).isEqualTo(7);
+    }
+
 
     @Test
     @DisplayName("유효하지 않은 토큰으로 조회 시 예외가 발생한다.")
@@ -105,6 +168,5 @@ public class QueueTokenServiceTest {
             .hasMessageContaining("유효하지 않은 토큰입니다.");
 
     }
-
 
 }

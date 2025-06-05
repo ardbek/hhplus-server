@@ -38,7 +38,7 @@ dependencies {
     // DB
 	runtimeOnly("com.mysql:mysql-connector-j")
 
-	// Lombok ✅ 추가
+	// Lombok
 	compileOnly("org.projectlombok:lombok:1.18.30")
 	annotationProcessor("org.projectlombok:lombok:1.18.30")
 

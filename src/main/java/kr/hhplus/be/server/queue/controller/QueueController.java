@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.queue.controller;
 
+import kr.hhplus.be.server.queue.domain.QueueToken;
 import kr.hhplus.be.server.queue.dto.request.QueueTokenIssueRequest;
 import kr.hhplus.be.server.queue.dto.response.QueueStatusResponse;
 import kr.hhplus.be.server.queue.dto.response.QueueTokenIssueResponse;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
-@RequestMapping("/queue")
+@RequestMapping("/api/queue")
 @RequiredArgsConstructor
 public class QueueController {
 
@@ -24,7 +25,13 @@ public class QueueController {
     // 대기열 토큰 발급 api
     @PostMapping("/token")
     public ResponseEntity<QueueTokenIssueResponse> issue(@RequestBody QueueTokenIssueRequest request) {
-        return ResponseEntity.ok(queueTokenService.issueToken(request.userId()));
+        QueueToken token = queueTokenService.issueToken(request.userId());
+
+        QueueTokenIssueResponse queueTokenIssueResponse = new QueueTokenIssueResponse(
+                token.getUser().getId(), token.getToken(), token.getStatus().name(), token.getIssuedAt(),
+                token.getExpiresAt());
+
+        return ResponseEntity.ok(queueTokenIssueResponse);
     }
 
     // 대기 번호 조회 api

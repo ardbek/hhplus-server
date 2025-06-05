@@ -3,12 +3,20 @@ package kr.hhplus.be.server.reservation.infrastructure.persistence;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
 import kr.hhplus.be.server.reservation.domain.ReservationStatus;
+import kr.hhplus.be.server.reservationInfo.domain.ConcertSchedule;
+import kr.hhplus.be.server.reservationInfo.domain.Seat;
+import kr.hhplus.be.server.user.domain.User;
+import lombok.Getter;
 
+@Getter
 @Entity
 public class ReservationEntity {
 
@@ -16,43 +24,26 @@ public class ReservationEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    Long userId;
-    Long concertScheduleId;
-    Long seatId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "use_id")
+    User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "concert_schedule_id")
+    ConcertSchedule concertSchedule;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "seat_id")
+    Seat seat;
 
     @Enumerated(EnumType.STRING)
-    ReservationStatus status;
+    ReservationStatus status; // LOCKED, CONFIRMED, RELEASED
 
     LocalDateTime createdAt;
+
     LocalDateTime updatedAt;
 
     protected ReservationEntity() {}
 
-    public Long getId() {
-        return id;
-    }
 
-    public Long getUserId() {
-        return userId;
-    }
-
-    public Long getConcertScheduleId() {
-        return concertScheduleId;
-    }
-
-    public Long getSeatId() {
-        return seatId;
-    }
-
-    public ReservationStatus getStatus() {
-        return status;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
 }

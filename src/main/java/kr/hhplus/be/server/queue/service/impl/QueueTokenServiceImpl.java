@@ -5,11 +5,13 @@ import java.util.UUID;
 import kr.hhplus.be.server.queue.domain.QueueToken;
 import kr.hhplus.be.server.queue.domain.TokenStatus;
 import kr.hhplus.be.server.queue.dto.response.QueueStatusResponse;
-import kr.hhplus.be.server.queue.dto.response.QueueTokenIssueResponse;
 import kr.hhplus.be.server.queue.exception.AlreadyInQueueException;
 import kr.hhplus.be.server.queue.exception.TokenNotFoundException;
 import kr.hhplus.be.server.queue.repository.QueueTokenRepository;
 import kr.hhplus.be.server.queue.service.QueueTokenService;
+import kr.hhplus.be.server.user.domain.User;
+import kr.hhplus.be.server.user.exception.UserNotFoundException;
+import kr.hhplus.be.server.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,20 +20,21 @@ import org.springframework.stereotype.Service;
 public class QueueTokenServiceImpl implements QueueTokenService {
 
     private final QueueTokenRepository queueTokenRepository;
+    private final UserRepository userRepository;
 
     @Override
-    public QueueTokenIssueResponse issueToken(Long userId) {
+    public QueueToken issueToken(Long userId) {
 
-        if(queueTokenRepository.existsByUserIdAndStatus(userId, TokenStatus.WAITING)) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException());
+
+        if(queueTokenRepository.existsByUserAndStatus(user, TokenStatus.WAITING)) {
             throw new AlreadyInQueueException();
         }
 
-        int newPosition = queueTokenRepository.findMaxPosition().orElse(0) + 1;
-
         QueueToken token = QueueToken.builder()
-            .userId(userId)
+            .user(user)
             .token(UUID.randomUUID().toString())
-            .position(newPosition)
             .status(TokenStatus.WAITING)
             .issuedAt(LocalDateTime.now())
             .expiresAt(LocalDateTime.now().plusMinutes(10))
@@ -39,7 +42,7 @@ public class QueueTokenServiceImpl implements QueueTokenService {
 
         queueTokenRepository.save(token);
 
-        return new QueueTokenIssueResponse(token.getUserId(),token.getToken(), token.getPosition(), token.getStatus().name(),token.getIssuedAt(),token.getExpiresAt());
+        return token;
     }
 
     @Override
@@ -47,7 +50,21 @@ public class QueueTokenServiceImpl implements QueueTokenService {
         QueueToken queueToken = queueTokenRepository.findByToken(token)
             .orElseThrow(() -> new TokenNotFoundException());
 
-        return new QueueStatusResponse(queueToken.getPosition(), queueToken.getStatus().name());
+        int batchSize = 5;
+        int position = getPosition(queueToken);
 
+        if (position >= 1 && position <= batchSize
+                && queueToken.getStatus() == TokenStatus.WAITING) {
+            queueToken.active();
+            queueTokenRepository.save(queueToken);
+        }
+
+        return new QueueStatusResponse(position, queueToken.getStatus().name());
+    }
+
+    private int getPosition(QueueToken token) {
+        return queueTokenRepository.countByStatusAndCreatedAtBefore(
+                TokenStatus.WAITING, token.getIssuedAt()
+        ) + 1;
     }
 }

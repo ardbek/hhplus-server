@@ -7,6 +7,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
 import kr.hhplus.be.server.common.persistence.BaseTimeEntity;
+import kr.hhplus.be.server.concert.domain.Concert;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
