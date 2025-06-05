@@ -1,17 +1,14 @@
 package kr.hhplus.be.server.wallet.controller;
 
 import static org.mockito.BDDMockito.given;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import kr.hhplus.be.server.wallet.domain.Wallet;
 import kr.hhplus.be.server.wallet.dto.request.BalanceChargeRequest;
-import kr.hhplus.be.server.wallet.dto.request.WalletBalanceRequest;
-import kr.hhplus.be.server.wallet.dto.response.BalanceChargeResponse;
-import kr.hhplus.be.server.wallet.dto.response.WalletBalanceResponse;
 import kr.hhplus.be.server.wallet.service.WalletService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -37,14 +34,16 @@ public class WalletControllerTest {
     @DisplayName("잔액 조회 API가 정상 동작한다.")
     void getBalance_success() throws Exception {
         // given
-        WalletBalanceRequest request = new WalletBalanceRequest(1L);
-        WalletBalanceResponse response = new WalletBalanceResponse(1L, 5_000L);
+        Wallet wallet = Wallet.builder()
+                .id(1L)
+                .balance(5_000L)
+                .build();
 
-        given(walletService.getBalance(1L)).willReturn(response);
+        given(walletService.getBalance(1L)).willReturn(wallet);
 
         // when & then
         mockMvc.perform(get("/api/wallet")
-            .param("userId", String.valueOf(request.userId())))
+            .param("userId", String.valueOf(1L)))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.id").value(1L))
             .andExpect(jsonPath("$.balance").value(5_000L));
@@ -54,15 +53,21 @@ public class WalletControllerTest {
     @Test
     @DisplayName("잔액 충전 API가 정상 동작한다.")
     void chargeBalance_success() throws Exception {
+        // given
         Long walletId = 1L;
         Long chargeAmount = 2_000L;
         Long totalAmount = 7_000L;
 
         BalanceChargeRequest request = new BalanceChargeRequest(walletId, chargeAmount);
-        BalanceChargeResponse response = new BalanceChargeResponse(walletId, totalAmount);
 
-        given(walletService.charge(1L,chargeAmount)).willReturn(response);
+        Wallet wallet = Wallet.builder()
+                .id(walletId)
+                .balance(totalAmount)
+                .build();
 
+        given(walletService.charge(1L,chargeAmount)).willReturn(wallet);
+
+        // when & then
         mockMvc.perform(post("/api/wallet")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request))

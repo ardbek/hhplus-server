@@ -2,10 +2,14 @@ package kr.hhplus.be.server.wallet.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import kr.hhplus.be.server.common.persistence.BaseTimeEntity;
+import kr.hhplus.be.server.user.domain.User;
 import kr.hhplus.be.server.wallet.exception.InvalidChargeAmountException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -25,8 +29,9 @@ public class Wallet extends BaseTimeEntity {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name="user_id")
-    private Long userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @Column(name = "balance")
     private Long balance;

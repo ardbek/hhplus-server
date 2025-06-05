@@ -6,8 +6,6 @@ import static org.mockito.BDDMockito.given;
 
 import java.util.Optional;
 import kr.hhplus.be.server.wallet.domain.Wallet;
-import kr.hhplus.be.server.wallet.dto.response.BalanceChargeResponse;
-import kr.hhplus.be.server.wallet.dto.response.WalletBalanceResponse;
 import kr.hhplus.be.server.wallet.exception.InvalidChargeAmountException;
 import kr.hhplus.be.server.wallet.exception.WalletNotFoundException;
 import kr.hhplus.be.server.wallet.repository.WalletRepository;
@@ -49,11 +47,11 @@ public class WalletServiceTest {
         given(walletRepository.findByUserId(walletId)).willReturn(Optional.of(wallet));
 
         //when
-        WalletBalanceResponse findWallet = walletServiceImpl.getBalance(userId);
+        Wallet findWallet = walletServiceImpl.getBalance(userId);
 
         //then
-        assertThat(findWallet.id()).isEqualTo(walletId);
-        assertThat(findWallet.balance()).isEqualTo(amount);
+        assertThat(findWallet.getId()).isEqualTo(walletId);
+        assertThat(findWallet.getBalance()).isEqualTo(amount);
 
     }
 
@@ -87,12 +85,11 @@ public class WalletServiceTest {
         given(walletRepository.save(wallet)).willReturn(wallet);
 
         //when
-        BalanceChargeResponse charged = walletServiceImpl.charge(walletId, 1_000L);
+        Wallet charged = walletServiceImpl.charge(walletId, 1_000L);
 
         //then
-        assertThat(charged.balance()).isEqualTo(initialAmount + chargeAmount);
-        assertThat(charged.walletId()).isEqualTo(walletId);
-        assertThat(charged.balance()).isEqualTo(wallet.getBalance());
+        assertThat(charged.getBalance()).isEqualTo(initialAmount + chargeAmount);
+        assertThat(charged.getId()).isEqualTo(walletId);
 
     }
 

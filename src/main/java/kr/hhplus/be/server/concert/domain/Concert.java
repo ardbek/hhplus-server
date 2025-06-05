@@ -1,6 +1,8 @@
-package kr.hhplus.be.server.reservationInfo.domain;
+package kr.hhplus.be.server.concert.domain;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -16,6 +18,7 @@ import lombok.NoArgsConstructor;
 public class Concert {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String title;
