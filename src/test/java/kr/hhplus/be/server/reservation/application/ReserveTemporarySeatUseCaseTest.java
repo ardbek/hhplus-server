@@ -35,7 +35,6 @@ public class ReserveTemporarySeatUseCaseTest {
                 seatRepository);
     }
 
-    // 시나리오 1. 정상적으로 좌석 예약에 성공한다.
     @Test
     @DisplayName("좌석 임시 예약에 성공한다.")
     void reserveTemporarySeat_success() {
@@ -65,7 +64,6 @@ public class ReserveTemporarySeatUseCaseTest {
         assertThat(reservation.getStatus()).isEqualTo(ReservationStatus.LOCKED);
     }
 
-    // 시나리오 2. 이미 임시 예약된 좌석이면 예외가 발생한다.
     @Test
     @DisplayName("이미 임시 예약된 좌석이면 예외가 발생한다.")
     void reserveSeat_alreadyReserved() {
@@ -81,7 +79,6 @@ public class ReserveTemporarySeatUseCaseTest {
                 .isInstanceOf(SeatAlreadyReservedException.class);
     }
 
-    // 시나리오 3. 좌석이 존재하지 않으면 예외가 발생한다
     @Test
     @DisplayName("좌석이 존재하지 않으면 예외가 발생한다.")
     void reserveSeat_seatNotFound() {

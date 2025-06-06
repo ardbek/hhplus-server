@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Entity
-public class Wallet extends BaseTimeEntity {
+public class Balance extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,7 +40,7 @@ public class Wallet extends BaseTimeEntity {
     private final Long MIN_CHARGE_AMOUNT = 0L;
 
 
-    public Wallet charge(long chargeAmount) {
+    public Balance charge(long chargeAmount) {
         if (chargeAmount <= MIN_CHARGE_AMOUNT || chargeAmount > MAX_CHARGE_AMOUNT) {
             throw new InvalidChargeAmountException();
         }

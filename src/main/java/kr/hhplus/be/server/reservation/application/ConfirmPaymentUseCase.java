@@ -22,8 +22,8 @@ import kr.hhplus.be.server.reservationInfo.repository.SeatRepository;
 import kr.hhplus.be.server.user.domain.User;
 import kr.hhplus.be.server.user.exception.UserNotFoundException;
 import kr.hhplus.be.server.user.repository.UserRepository;
-import kr.hhplus.be.server.wallet.domain.Wallet;
-import kr.hhplus.be.server.wallet.repository.WalletRepository;
+import kr.hhplus.be.server.wallet.domain.Balance;
+import kr.hhplus.be.server.wallet.repository.BalanceRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 
@@ -31,19 +31,19 @@ public class ConfirmPaymentUseCase {
 
     private final ReservationRepository reservationRepository;
     private final PaymentRepository paymentRepository;
-    private final WalletRepository walletRepository;
+    private final BalanceRepository balanceRepository;
     private final SeatRepository seatRepository;
     private final BalanceHistoryRepository balanceHistoryRepository;
     private final QueueTokenRepository queueTokenRepository;
     private final UserRepository userRepository;
 
     public ConfirmPaymentUseCase(ReservationRepository reservationRepository,
-            PaymentRepository paymentRepository, WalletRepository walletRepository,
+            PaymentRepository paymentRepository, BalanceRepository balanceRepository,
             SeatRepository seatRepository, BalanceHistoryRepository balanceHistoryRepository,
             QueueTokenRepository queueTokenRepository, UserRepository userRepository) {
         this.reservationRepository = reservationRepository;
         this.paymentRepository = paymentRepository;
-        this.walletRepository = walletRepository;
+        this.balanceRepository = balanceRepository;
         this.seatRepository = seatRepository;
         this.balanceHistoryRepository = balanceHistoryRepository;
         this.queueTokenRepository = queueTokenRepository;
@@ -54,10 +54,10 @@ public class ConfirmPaymentUseCase {
     public void confirmReservation(Long userId, Long reservationId) {
         Reservation reservation = validateReservation(userId, reservationId);
         long amount = getSeatPrice(reservation.getSeatId());
-        Wallet wallet = deductBalance(userId, amount);
+        Balance balance = deductBalance(userId, amount);
         confirmReservation(reservation);
         savePayment(userId, reservationId, amount);
-        saveBalanceHistory(userId, amount, wallet.getBalance());
+        saveBalanceHistory(userId, amount, balance.getBalance());
         expireQueueToken(userId);
     }
 
@@ -83,15 +83,15 @@ public class ConfirmPaymentUseCase {
         return amount;
     }
 
-    private Wallet deductBalance(Long userId, long amount) {
-        Wallet wallet = walletRepository.findByUserId(userId)
+    private Balance deductBalance(Long userId, long amount) {
+        Balance balance = balanceRepository.findByUserId(userId)
                 .orElseThrow(() -> new BalanceNotFoundException());
-        if (wallet.getBalance() < amount) {
+        if (balance.getBalance() < amount) {
             throw new InsufficientBalanceException();
         }
-        wallet.deduct(amount);
-        walletRepository.save(wallet);
-        return wallet;
+        balance.deduct(amount);
+        balanceRepository.save(balance);
+        return balance;
     }
 
     private void confirmReservation(Reservation reservation) {

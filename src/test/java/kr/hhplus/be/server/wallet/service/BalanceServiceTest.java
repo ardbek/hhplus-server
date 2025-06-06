@@ -5,11 +5,11 @@ import static org.assertj.core.api.AssertionsForClassTypes.catchThrowable;
 import static org.mockito.BDDMockito.given;
 
 import java.util.Optional;
-import kr.hhplus.be.server.wallet.domain.Wallet;
+import kr.hhplus.be.server.wallet.domain.Balance;
 import kr.hhplus.be.server.wallet.exception.InvalidChargeAmountException;
 import kr.hhplus.be.server.wallet.exception.WalletNotFoundException;
-import kr.hhplus.be.server.wallet.repository.WalletRepository;
-import kr.hhplus.be.server.wallet.service.impl.WalletServiceImpl;
+import kr.hhplus.be.server.wallet.repository.BalanceRepository;
+import kr.hhplus.be.server.wallet.service.impl.BalanceServiceImpl;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,18 +19,17 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
-public class WalletServiceTest {
+public class BalanceServiceTest {
 
     @InjectMocks
-    private WalletServiceImpl walletServiceImpl;
+    private BalanceServiceImpl balanceServiceImpl;
 
     @Mock
-    WalletRepository walletRepository;
+    BalanceRepository balanceRepository;
 
-    private Wallet createTestWallet(Long id, Long userId, Long balance) {
-        Wallet wallet = Wallet.builder().balance(balance).build();
+    private Balance createTestWallet(Long id, Long balance) {
+        Balance wallet = Balance.builder().balance(balance).build();
         ReflectionTestUtils.setField(wallet, "id", id);
-        ReflectionTestUtils.setField(wallet, "userId", id);
 
         return wallet;
     }
@@ -43,15 +42,15 @@ public class WalletServiceTest {
         Long userId = 1L;
         Long amount = 5_000L;
 
-        Wallet wallet = createTestWallet(walletId,userId, amount);
-        given(walletRepository.findByUserId(walletId)).willReturn(Optional.of(wallet));
+        Balance balance = createTestWallet(walletId, amount);
+        given(balanceRepository.findByUserId(walletId)).willReturn(Optional.of(balance));
 
         //when
-        Wallet findWallet = walletServiceImpl.getBalance(userId);
+        Balance findBalance = balanceServiceImpl.getBalance(userId);
 
         //then
-        assertThat(findWallet.getId()).isEqualTo(walletId);
-        assertThat(findWallet.getBalance()).isEqualTo(amount);
+        assertThat(findBalance.getId()).isEqualTo(walletId);
+        assertThat(findBalance.getBalance()).isEqualTo(amount);
 
     }
 
@@ -59,10 +58,10 @@ public class WalletServiceTest {
     @DisplayName("존재하지 않는 지갑 조회 시 예외를 발생시킨다")
     void getBalance_walletNotFound() {
         // given
-        given(walletRepository.findByUserId(1L)).willReturn(Optional.empty());
+        given(balanceRepository.findByUserId(1L)).willReturn(Optional.empty());
 
         // when
-        Throwable throwable = catchThrowable(() -> walletServiceImpl.getBalance(1L));
+        Throwable throwable = catchThrowable(() -> balanceServiceImpl.getBalance(1L));
 
         // then
         assertThat(throwable)
@@ -79,13 +78,13 @@ public class WalletServiceTest {
         Long chargeAmount = 1_000L;
         Long initialAmount = 5_000L;
 
-        Wallet wallet = createTestWallet(walletId, userId, initialAmount);
+        Balance balance = createTestWallet(walletId, initialAmount);
 
-        given(walletRepository.findById(walletId)).willReturn(Optional.of(wallet));
-        given(walletRepository.save(wallet)).willReturn(wallet);
+        given(balanceRepository.findByIdForUpdate(walletId)).willReturn(Optional.of(balance));
+        given(balanceRepository.save(balance)).willReturn(balance);
 
         //when
-        Wallet charged = walletServiceImpl.charge(walletId, 1_000L);
+        Balance charged = balanceServiceImpl.charge(walletId, 1_000L);
 
         //then
         assertThat(charged.getBalance()).isEqualTo(initialAmount + chargeAmount);
@@ -98,10 +97,10 @@ public class WalletServiceTest {
     void charge_fail_when_wallet_not_found() {
         // given
         Long walletId = 1L;
-        given(walletRepository.findById(walletId)).willReturn(Optional.empty());
+        given(balanceRepository.findByIdForUpdate(walletId)).willReturn(Optional.empty());
 
         // when
-        Throwable throwable = catchThrowable(() -> walletServiceImpl.charge(walletId, 1_000L));
+        Throwable throwable = catchThrowable(() -> balanceServiceImpl.charge(walletId, 1_000L));
 
         // then
         assertThat(throwable)
@@ -114,16 +113,10 @@ public class WalletServiceTest {
     void charge_fail_when_charge_amount_less_then_zero() {
         // given
         Long walletId = 1L;
-        Long userId = 1L;
-        Long initialAmount = 5_000L;
         Long chargeAmount = 0L;
 
-        Wallet wallet = createTestWallet(walletId, userId, initialAmount);
-
-        given(walletRepository.findById(walletId)).willReturn(Optional.of(wallet));
-
         // when
-        Throwable throwable = catchThrowable(() -> walletServiceImpl.charge(walletId, chargeAmount));
+        Throwable throwable = catchThrowable(() -> balanceServiceImpl.charge(walletId, chargeAmount));
 
         // then
         assertThat(throwable)
@@ -136,16 +129,10 @@ public class WalletServiceTest {
     void charge_fail_when_charge_amount_more_then_max_price() {
         // given
         Long walletId = 1L;
-        Long userId = 1L;
-        Long initialAmount = 5_000L;
         Long chargeAmount = 2_000_001L;
 
-        Wallet wallet = createTestWallet(walletId,userId, initialAmount);
-
-        given(walletRepository.findById(walletId)).willReturn(Optional.of(wallet));
-
         // when
-        Throwable throwable = catchThrowable(() -> walletServiceImpl.charge(walletId, chargeAmount));
+        Throwable throwable = catchThrowable(() -> balanceServiceImpl.charge(walletId, chargeAmount));
 
         // then
         assertThat(throwable)
