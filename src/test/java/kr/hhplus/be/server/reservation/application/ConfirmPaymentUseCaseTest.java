@@ -3,6 +3,7 @@ package kr.hhplus.be.server.reservation.application;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
 import java.util.Optional;
@@ -11,6 +12,7 @@ import kr.hhplus.be.server.balanceHistory.domain.BalanceHistory;
 import kr.hhplus.be.server.balanceHistory.repository.BalanceHistoryRepository;
 import kr.hhplus.be.server.queue.domain.TokenStatus;
 import kr.hhplus.be.server.queue.repository.QueueTokenRepository;
+import kr.hhplus.be.server.reservation.domain.ReservationStatus;
 import kr.hhplus.be.server.reservation.domain.model.Payment;
 import kr.hhplus.be.server.reservation.domain.model.Reservation;
 import kr.hhplus.be.server.reservation.domain.repository.PaymentRepository;
@@ -57,20 +59,19 @@ public class ConfirmPaymentUseCaseTest {
         long price = 5000L;
 
         Reservation reservation = mock(Reservation.class);
-        when(reservation.getUserId()).thenReturn(userId);
-        when(reservation.isLocked()).thenReturn(true);
-        when(reservation.getSeatId()).thenReturn(seatId);
+        given(reservation.getUserId()).willReturn(userId);
+        given(reservation.isLocked()).willReturn(true);
+        given(reservation.getSeatId()).willReturn(seatId);
 
-        when(reservationRepository.findById(reservationId)).thenReturn(Optional.of(reservation));
+        given(reservationRepository.findById(reservationId)).willReturn(Optional.of(reservation));
 
         Seat seat = Seat.builder().id(seatId).price(price).build();
         User user = User.builder().id(userId).build();
         Balance balance = Balance.builder().id(100L).user(user).balance(10_000L).build();
 
-        when(seatRepository.findById(seatId)).thenReturn(Optional.of(seat));
-        when(balanceRepository.findByUserId(userId)).thenReturn(Optional.of(balance));
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-
+        given(seatRepository.findById(seatId)).willReturn(Optional.of(seat));
+        given(balanceRepository.findByUserId(userId)).willReturn(Optional.of(balance));
+        given(userRepository.findById(userId)).willReturn(Optional.of(user));
 
         // when
         confirmPaymentUseCase.confirmReservation(userId, reservationId);
@@ -84,30 +85,34 @@ public class ConfirmPaymentUseCaseTest {
     }
 
     @Test
-    @DisplayName("임시 예약이 아닌 경우 예외가 발생한다.")
-    void confirmPayment_notTemporary() {
-        Long userId = 1L;
-        Long reservationId = 10L;
-        Reservation reservation = mock(Reservation.class);
-        when(reservation.getUserId()).thenReturn(userId);
-        when(reservation.isLocked()).thenReturn(false);
-        when(reservationRepository.findById(reservationId)).thenReturn(Optional.of(reservation));
+    @DisplayName("예약 상태가 LOCKED가 아니면 예외가 발생한다.")
+    void confirm_fail_if_not_locked() {
+        // given
+        Long ownerUserId = 1L;
+        // 상태가 이미 확정(CONFIRMED)된 예약 객체
+        Reservation reservation = Reservation.builder()
+                .userId(ownerUserId)
+                .status(ReservationStatus.CONFIRMED)
+                .build();
 
-        assertThatThrownBy(() -> confirmPaymentUseCase.confirmReservation(userId, reservationId))
-            .isInstanceOf(NotTemporaryReservationException.class);
+        // when & then
+        assertThatThrownBy(() -> reservation.confirm(ownerUserId))
+                .isInstanceOf(NotTemporaryReservationException.class);
     }
 
     @Test
-    @DisplayName("타인의 예약에 접근하면 예외가 발생한다.")
-    void confirmPayment_notYourReservation() {
-        Long userId = 1L;
-        Long reservationId = 10L;
-        Reservation reservation = mock(Reservation.class);
-        when(reservation.getUserId()).thenReturn(2L);
-        when(reservation.isLocked()).thenReturn(true);
-        when(reservationRepository.findById(reservationId)).thenReturn(Optional.of(reservation));
+    @DisplayName("예약 소유자가 아니면 예외가 발생한다.")
+    void confirm_fail_if_not_owner() {
+        // given
+        Long ownerUserId = 1L;
+        Long otherUserId = 2L; // 다른 사용자
+        Reservation reservation = Reservation.builder()
+                .userId(ownerUserId)
+                .status(ReservationStatus.LOCKED)
+                .build();
 
-        assertThatThrownBy(() -> confirmPaymentUseCase.confirmReservation(userId, reservationId))
-            .isInstanceOf(NotYourReservationException.class);
+        // when & then
+        assertThatThrownBy(() -> reservation.confirm(otherUserId))
+                .isInstanceOf(NotYourReservationException.class);
     }
 }

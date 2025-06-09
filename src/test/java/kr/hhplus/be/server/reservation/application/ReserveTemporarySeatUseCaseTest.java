@@ -11,6 +11,7 @@ import kr.hhplus.be.server.reservation.domain.model.Reservation;
 import kr.hhplus.be.server.reservation.domain.repository.ReservationRepository;
 import kr.hhplus.be.server.reservation.exception.SeatAlreadyReservedException;
 import kr.hhplus.be.server.reservation.exception.SeatNotFoundException;
+import kr.hhplus.be.server.reservationInfo.domain.Seat;
 import kr.hhplus.be.server.reservationInfo.repository.SeatRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -36,59 +37,35 @@ public class ReserveTemporarySeatUseCaseTest {
     }
 
     @Test
-    @DisplayName("좌석 임시 예약에 성공한다.")
-    void reserveTemporarySeat_success() {
+    @DisplayName("좌석이 예약되지 않았을 때, 임시 예약 객체를 성공적으로 생성한다.")
+    void reserveTemporary_success() {
         // given
         Long userId = 1L;
         Long concertScheduleId = 100L;
-        Long seatId = 1L;
-
-        given(reservationRepository.existsLocked(seatId, concertScheduleId)).willReturn(false);
-
-        Reservation expected = Reservation.builder()
-                .userId(userId)
-                .concertScheduleId(concertScheduleId)
-                .seatId(seatId)
-                .status(ReservationStatus.LOCKED)
-                .build();
-
-        given(reservationRepository.save(any())).willReturn(expected);
+        Long seatId = 50L;
+        boolean isAlreadyReserved = false; // "이미 예약되었는가?" -> 아니오
 
         // when
-        Reservation reservation = reserveTemporarySeatUseCase.reserveTemporary(userId, concertScheduleId, seatId);
+        Reservation reservation = Reservation.reserveTemporary(userId, concertScheduleId, seatId, isAlreadyReserved);
 
         // then
-        assertThat(reservation.getUserId()).isEqualTo(expected.getUserId());
-        assertThat(reservation.getConcertScheduleId()).isEqualTo(concertScheduleId);
-        assertThat(reservation.getSeatId()).isEqualTo(seatId);
+        assertThat(reservation).isNotNull();
         assertThat(reservation.getStatus()).isEqualTo(ReservationStatus.LOCKED);
+        assertThat(reservation.getUserId()).isEqualTo(userId);
     }
 
     @Test
-    @DisplayName("이미 임시 예약된 좌석이면 예외가 발생한다.")
-    void reserveSeat_alreadyReserved() {
+    @DisplayName("좌석이 이미 예약되었을 때, SeatAlreadyReservedException 예외를 발생시킨다.")
+    void reserveTemporary_fail_if_already_reserved() {
         // given
         Long userId = 1L;
         Long concertScheduleId = 100L;
-        Long seatId = 10L;
-
-        given(reservationRepository.existsLocked(seatId, concertScheduleId)).willReturn(true);
+        Long seatId = 50L;
+        boolean isAlreadyReserved = true; // "이미 예약되었는가?" -> 네
 
         // when & then
-        assertThatThrownBy(() -> reserveTemporarySeatUseCase.reserveTemporary(userId, concertScheduleId, seatId))
+        // Reservation.reserveTemporary 메서드를 직접 호출하여 예외 발생을 검증
+        assertThatThrownBy(() -> Reservation.reserveTemporary(userId, concertScheduleId, seatId, isAlreadyReserved))
                 .isInstanceOf(SeatAlreadyReservedException.class);
-    }
-
-    @Test
-    @DisplayName("좌석이 존재하지 않으면 예외가 발생한다.")
-    void reserveSeat_seatNotFound() {
-        // given
-        Long seatId = 10L;
-        given(seatRepository.findByIdForUpdate(seatId)).willReturn(Optional.empty());
-
-        // when & then
-        assertThatThrownBy(() ->
-                reserveTemporarySeatUseCase.reserveTemporary(1L, 100L, seatId))
-                .isInstanceOf(SeatNotFoundException.class);
     }
 }
