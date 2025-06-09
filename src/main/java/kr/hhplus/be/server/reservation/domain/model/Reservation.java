@@ -2,6 +2,9 @@ package kr.hhplus.be.server.reservation.domain.model;
 
 import java.time.LocalDateTime;
 import kr.hhplus.be.server.reservation.domain.ReservationStatus;
+import kr.hhplus.be.server.reservation.exception.NotTemporaryReservationException;
+import kr.hhplus.be.server.reservation.exception.NotYourReservationException;
+import kr.hhplus.be.server.reservation.exception.SeatAlreadyReservedException;
 
 public class Reservation {
 
@@ -31,8 +34,46 @@ public class Reservation {
         return this.status == ReservationStatus.LOCKED;
     }
 
-    public void confirm() {
+    /**
+     * 임시 예약
+     * @param userId - 예약할 사용자
+     * @param seatId - 예약할 좌석
+     * @param concertScheduleId - 예약할 콘서트 id
+     * @param isExistsLock - 이미 다른 사용자가 예약중인지 여부
+     * @return
+     */
+    public static Reservation reserveTemporary(Long userId, Long seatId, Long concertScheduleId, boolean isExistsLock) {
+        if (isExistsLock) {
+            throw new SeatAlreadyReservedException();
+        }
+
+        return Reservation.builder()
+                .userId(userId)
+                .concertScheduleId(concertScheduleId)
+                .seatId(seatId)
+                .status(ReservationStatus.LOCKED)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
+    }
+
+    /**
+     * 예약 최종 확정
+     * @param requestUserId 결제 시도하는 사용자 ID
+     * @throws NotYourReservationException 예약 소유자가 아닐 경우
+     * @throws NotTemporaryReservationException 임시 배정(LOCKED) 상태가 아닐 경우
+     */
+    public void confirm(Long requestUserId) {
+        if(!this.userId.equals(requestUserId)) {
+            throw new NotYourReservationException();
+        }
+
+        if (this.status != ReservationStatus.LOCKED) {
+            throw new NotTemporaryReservationException();
+        }
+
         this.status = ReservationStatus.CONFIRMED;
+        this.updatedAt = LocalDateTime.now();
     }
 
     public static class Builder {

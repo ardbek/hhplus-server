@@ -52,67 +52,39 @@ public class ConfirmPaymentUseCase {
 
     @Transactional
     public void confirmReservation(Long userId, Long reservationId) {
-        Reservation reservation = validateReservation(userId, reservationId);
-        long amount = getSeatPrice(reservation.getSeatId());
-        Balance balance = deductBalance(userId, amount);
-        confirmReservation(reservation);
-        savePayment(userId, reservationId, amount);
-        saveBalanceHistory(userId, amount, balance.getBalance());
+        // 1. 도메인 객체 조회
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(ReservationNotFoundException::new);
+        Seat seat = seatRepository.findById(reservation.getSeatId()).orElseThrow(SeatNotFoundException::new);
+        Balance balance = balanceRepository.findByUserId(userId).orElseThrow(BalanceNotFoundException::new);
+
+        // 2. 예약 확정, 결제 처리
+        reservation.confirm(user.getId());
+        balance.pay(seat.getPrice());
+
+        // 3. 예약, 잔고 저장
+        reservationRepository.save(reservation);
+        balanceRepository.save(balance);
+
+        // 결제 내역 생성, 저장
+        createPayment(reservation, seat.getPrice());
+        createBalanceHistory(user, seat.getPrice(), balance.getBalance());
+
         expireQueueToken(userId);
     }
 
-    private Reservation validateReservation(Long userId, Long reservationId) {
-        Reservation reservation = reservationRepository.findById(reservationId)
-                .orElseThrow(() -> new ReservationNotFoundException());
-        if (!reservation.isLocked()) {
-            throw new NotTemporaryReservationException();
-        }
-        if (!reservation.getUserId().equals(userId)) {
-            throw new NotYourReservationException();
-        }
-        return reservation;
-    }
-
-    private long getSeatPrice(Long seatId) {
-        Seat seat = seatRepository.findById(seatId)
-                .orElseThrow(() -> new SeatNotFoundException());
-        long amount = seat.getPrice();
-        if (amount <= 0) {
-            throw new InvalidSeatPriceException();
-        }
-        return amount;
-    }
-
-    private Balance deductBalance(Long userId, long amount) {
-        Balance balance = balanceRepository.findByUserId(userId)
-                .orElseThrow(() -> new BalanceNotFoundException());
-        if (balance.getBalance() < amount) {
-            throw new InsufficientBalanceException();
-        }
-        balance.deduct(amount);
-        balanceRepository.save(balance);
-        return balance;
-    }
-
-    private void confirmReservation(Reservation reservation) {
-        reservation.confirm();
-        reservationRepository.save(reservation);
-    }
-
-    private void savePayment(Long userId, Long reservationId, long amount) {
+    private void createPayment(Reservation reservation, Long amount) {
         Payment payment = Payment.builder()
-                .userId(userId)
-                .reservationId(reservationId)
+                .userId(reservation.getUserId())
+                .reservationId(reservation.getId())
                 .price(amount)
                 .createdAt(LocalDateTime.now())
                 .build();
         paymentRepository.save(payment);
     }
 
-    private void saveBalanceHistory(Long userId, long amount, long balanceAfter) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException());
-
+    private void createBalanceHistory(User user, long amount, long balanceAfter) {
         BalanceHistory history = BalanceHistory.builder()
                 .user(user)
                 .type(BalanceHistoryType.USE)

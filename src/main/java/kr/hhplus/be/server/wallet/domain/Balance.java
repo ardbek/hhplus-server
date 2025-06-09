@@ -9,6 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import kr.hhplus.be.server.common.persistence.BaseTimeEntity;
+import kr.hhplus.be.server.reservation.exception.InsufficientBalanceException;
 import kr.hhplus.be.server.user.domain.User;
 import kr.hhplus.be.server.wallet.exception.InvalidChargeAmountException;
 import lombok.AccessLevel;
@@ -55,9 +56,14 @@ public class Balance extends BaseTimeEntity {
 
     }
 
-    public void deduct(long amount) {
+    /**
+     * 결제를 위해 금액을 차감합니다.
+     * @param amount 결제할 금액
+     * @throws InsufficientBalanceException 잔액이 부족할 경우
+     */
+    public void pay(long amount) {
         if (balance < amount) {
-            throw new IllegalStateException("잔액 부족");
+            throw new InsufficientBalanceException();
         }
         this.balance -= amount;
     }
