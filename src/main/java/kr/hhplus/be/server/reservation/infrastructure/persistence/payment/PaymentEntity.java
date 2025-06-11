@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.reservation.infrastructure.persistence;
+package kr.hhplus.be.server.reservation.infrastructure.persistence.payment;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

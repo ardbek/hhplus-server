@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.reservation.application;
+package kr.hhplus.be.server.reservation.application.reservation;
 
 import java.time.LocalDateTime;
 import kr.hhplus.be.server.balanceHistory.domain.BalanceHistory;
@@ -6,24 +6,20 @@ import kr.hhplus.be.server.balanceHistory.domain.BalanceHistoryType;
 import kr.hhplus.be.server.balanceHistory.repository.BalanceHistoryRepository;
 import kr.hhplus.be.server.queue.domain.TokenStatus;
 import kr.hhplus.be.server.queue.repository.QueueTokenRepository;
+import kr.hhplus.be.server.reservation.domain.model.Balance;
 import kr.hhplus.be.server.reservation.domain.model.Payment;
 import kr.hhplus.be.server.reservation.domain.model.Reservation;
+import kr.hhplus.be.server.reservation.domain.repository.BalanceRepository;
 import kr.hhplus.be.server.reservation.domain.repository.PaymentRepository;
 import kr.hhplus.be.server.reservation.domain.repository.ReservationRepository;
-import kr.hhplus.be.server.reservation.exception.BalanceNotFoundException;
-import kr.hhplus.be.server.reservation.exception.InsufficientBalanceException;
-import kr.hhplus.be.server.reservation.exception.InvalidSeatPriceException;
-import kr.hhplus.be.server.reservation.exception.NotTemporaryReservationException;
-import kr.hhplus.be.server.reservation.exception.NotYourReservationException;
-import kr.hhplus.be.server.reservation.exception.ReservationNotFoundException;
-import kr.hhplus.be.server.reservation.exception.SeatNotFoundException;
+import kr.hhplus.be.server.reservation.exception.balance.BalanceNotFoundException;
+import kr.hhplus.be.server.reservation.exception.reservation.ReservationNotFoundException;
+import kr.hhplus.be.server.reservation.exception.seat.SeatNotFoundException;
 import kr.hhplus.be.server.reservationInfo.domain.Seat;
 import kr.hhplus.be.server.reservationInfo.repository.SeatRepository;
 import kr.hhplus.be.server.user.domain.User;
 import kr.hhplus.be.server.user.exception.UserNotFoundException;
 import kr.hhplus.be.server.user.repository.UserRepository;
-import kr.hhplus.be.server.wallet.domain.Balance;
-import kr.hhplus.be.server.wallet.repository.BalanceRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 
@@ -57,19 +53,19 @@ public class ConfirmPaymentUseCase {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(ReservationNotFoundException::new);
         Seat seat = seatRepository.findById(reservation.getSeatId()).orElseThrow(SeatNotFoundException::new);
-        Balance balance = balanceRepository.findByUserId(userId).orElseThrow(BalanceNotFoundException::new);
+        Balance balanceEntity = balanceRepository.findByUserId(userId).orElseThrow(BalanceNotFoundException::new);
 
         // 2. 예약 확정, 결제 처리
         reservation.confirm(user.getId());
-        balance.pay(seat.getPrice());
+        balanceEntity.pay(seat.getPrice());
 
         // 3. 예약, 잔고 저장
         reservationRepository.save(reservation);
-        balanceRepository.save(balance);
+        balanceRepository.save(balanceEntity);
 
-        // 결제 내역 생성, 저장
+        // 4. 결제 내역 생성, 저장
         createPayment(reservation, seat.getPrice());
-        createBalanceHistory(user, seat.getPrice(), balance.getBalance());
+        createBalanceHistory(user, seat.getPrice(), balanceEntity.getBalance());
 
         expireQueueToken(userId);
     }

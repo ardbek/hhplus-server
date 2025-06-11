@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.reservation.infrastructure.persistence;
+package kr.hhplus.be.server.reservation.infrastructure.persistence.payment;
 
 import kr.hhplus.be.server.reservation.domain.model.Payment;
 import kr.hhplus.be.server.reservation.domain.repository.PaymentRepository;

@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.reservation.exception;
+package kr.hhplus.be.server.reservation.exception.seat;
 
 public class SeatAlreadyReservedException extends RuntimeException {
 

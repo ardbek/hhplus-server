@@ -2,9 +2,9 @@ package kr.hhplus.be.server.reservation.domain.model;
 
 import java.time.LocalDateTime;
 import kr.hhplus.be.server.reservation.domain.ReservationStatus;
-import kr.hhplus.be.server.reservation.exception.NotTemporaryReservationException;
-import kr.hhplus.be.server.reservation.exception.NotYourReservationException;
-import kr.hhplus.be.server.reservation.exception.SeatAlreadyReservedException;
+import kr.hhplus.be.server.reservation.exception.reservation.NotTemporaryReservationException;
+import kr.hhplus.be.server.reservation.exception.reservation.NotYourReservationException;
+import kr.hhplus.be.server.reservation.exception.seat.SeatAlreadyReservedException;
 
 public class Reservation {
 

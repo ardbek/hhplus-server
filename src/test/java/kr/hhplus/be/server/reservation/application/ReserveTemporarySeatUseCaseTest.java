@@ -3,15 +3,12 @@ package kr.hhplus.be.server.reservation.application;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
 
-import java.util.Optional;
+import kr.hhplus.be.server.reservation.application.reservation.ReserveTemporarySeatUseCase;
 import kr.hhplus.be.server.reservation.domain.ReservationStatus;
 import kr.hhplus.be.server.reservation.domain.model.Reservation;
 import kr.hhplus.be.server.reservation.domain.repository.ReservationRepository;
-import kr.hhplus.be.server.reservation.exception.SeatAlreadyReservedException;
-import kr.hhplus.be.server.reservation.exception.SeatNotFoundException;
-import kr.hhplus.be.server.reservationInfo.domain.Seat;
+import kr.hhplus.be.server.reservation.exception.seat.SeatAlreadyReservedException;
 import kr.hhplus.be.server.reservationInfo.repository.SeatRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -43,7 +40,7 @@ public class ReserveTemporarySeatUseCaseTest {
         Long userId = 1L;
         Long concertScheduleId = 100L;
         Long seatId = 50L;
-        boolean isAlreadyReserved = false; // "이미 예약되었는가?" -> 아니오
+        boolean isAlreadyReserved = false;
 
         // when
         Reservation reservation = Reservation.reserveTemporary(userId, concertScheduleId, seatId, isAlreadyReserved);
@@ -64,7 +61,6 @@ public class ReserveTemporarySeatUseCaseTest {
         boolean isAlreadyReserved = true; // "이미 예약되었는가?" -> 네
 
         // when & then
-        // Reservation.reserveTemporary 메서드를 직접 호출하여 예외 발생을 검증
         assertThatThrownBy(() -> Reservation.reserveTemporary(userId, concertScheduleId, seatId, isAlreadyReserved))
                 .isInstanceOf(SeatAlreadyReservedException.class);
     }

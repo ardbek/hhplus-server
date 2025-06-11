@@ -2,8 +2,14 @@ package kr.hhplus.be.server.config.jpa;
 
 import kr.hhplus.be.server.balanceHistory.repository.BalanceHistoryRepository;
 import kr.hhplus.be.server.queue.repository.QueueTokenRepository;
-import kr.hhplus.be.server.reservation.application.ConfirmPaymentUseCase;
-import kr.hhplus.be.server.reservation.application.ReserveTemporarySeatUseCase;
+import kr.hhplus.be.server.reservation.application.balance.ChargeBalanceUseCase;
+import kr.hhplus.be.server.reservation.application.reservationToken.CheckQueueStatusUseCase;
+import kr.hhplus.be.server.reservation.application.reservation.ConfirmPaymentUseCase;
+import kr.hhplus.be.server.reservation.application.balance.GetBalanceUseCase;
+import kr.hhplus.be.server.reservation.application.reservationToken.IssueReservationTokenUseCase;
+import kr.hhplus.be.server.reservation.application.reservationToken.QueueActivationScheduler;
+import kr.hhplus.be.server.reservation.application.reservation.ReserveTemporarySeatUseCase;
+import kr.hhplus.be.server.reservation.domain.repository.BalanceRepository;
 import kr.hhplus.be.server.reservation.domain.repository.PaymentRepository;
 import kr.hhplus.be.server.reservation.domain.repository.ReservationRepository;
 import kr.hhplus.be.server.reservation.domain.repository.ReservationTokenRepository;

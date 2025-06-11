@@ -1,7 +1,7 @@
 package kr.hhplus.be.server.reservation.interfaces.web.controller;
 
-import kr.hhplus.be.server.reservation.application.ConfirmPaymentUseCase;
-import kr.hhplus.be.server.reservation.application.ReserveTemporarySeatUseCase;
+import kr.hhplus.be.server.reservation.application.reservation.ConfirmPaymentUseCase;
+import kr.hhplus.be.server.reservation.application.reservation.ReserveTemporarySeatUseCase;
 import kr.hhplus.be.server.reservation.domain.model.Reservation;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

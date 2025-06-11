@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.reservation.exception;
+package kr.hhplus.be.server.reservation.exception.reservation;
 
 public class NotYourReservationException extends RuntimeException {
 

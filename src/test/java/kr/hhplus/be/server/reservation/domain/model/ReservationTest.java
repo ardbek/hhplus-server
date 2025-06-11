@@ -3,8 +3,8 @@ package kr.hhplus.be.server.reservation.domain.model;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import kr.hhplus.be.server.reservation.domain.ReservationStatus;
-import kr.hhplus.be.server.reservation.exception.NotTemporaryReservationException;
-import kr.hhplus.be.server.reservation.exception.NotYourReservationException;
+import kr.hhplus.be.server.reservation.exception.reservation.NotTemporaryReservationException;
+import kr.hhplus.be.server.reservation.exception.reservation.NotYourReservationException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

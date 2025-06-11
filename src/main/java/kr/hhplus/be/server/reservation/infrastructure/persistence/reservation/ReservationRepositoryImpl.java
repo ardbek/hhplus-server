@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.reservation.infrastructure.persistence;
+package kr.hhplus.be.server.reservation.infrastructure.persistence.reservation;
 
 import java.util.Optional;
 import kr.hhplus.be.server.reservation.domain.ReservationStatus;

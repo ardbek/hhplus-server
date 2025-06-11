@@ -27,7 +27,10 @@ public class BalanceEntityControllerTest {
     private MockMvc mockMvc;
 
     @MockitoBean
-    private BalanceService balanceService;
+    private GetBalanceUseCase getBalanceUseCase;
+
+    @MockitoBean
+    private ChargeBalanceUseCase chargeBalanceUseCase;
 
     @Autowired
     private ObjectMapper objectMapper;

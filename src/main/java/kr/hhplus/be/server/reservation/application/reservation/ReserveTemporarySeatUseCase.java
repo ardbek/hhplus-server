@@ -1,8 +1,8 @@
-package kr.hhplus.be.server.reservation.application;
+package kr.hhplus.be.server.reservation.application.reservation;
 
 import kr.hhplus.be.server.reservation.domain.model.Reservation;
 import kr.hhplus.be.server.reservation.domain.repository.ReservationRepository;
-import kr.hhplus.be.server.reservation.exception.SeatNotFoundException;
+import kr.hhplus.be.server.reservation.exception.seat.SeatNotFoundException;
 import kr.hhplus.be.server.reservationInfo.repository.SeatRepository;
 import org.springframework.transaction.annotation.Transactional;
 
