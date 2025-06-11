@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.reservationInfo.domain;
+package kr.hhplus.be.server.reservation.infrastructure.persistence.seat;
 
 
 import jakarta.persistence.Entity;
@@ -7,6 +7,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import kr.hhplus.be.server.common.persistence.BaseTimeEntity;
+import kr.hhplus.be.server.reservation.infrastructure.persistence.concertSchedule.ConcertScheduleEntity;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,14 +19,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Entity
-public class Seat extends BaseTimeEntity {
+public class SeatEntity extends BaseTimeEntity {
 
     @Id
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="concert_schedule_id", nullable=false)
-    private ConcertSchedule concertSchedule;
+    private ConcertScheduleEntity concertScheduleEntity;
 
     private Integer seatNo;
 

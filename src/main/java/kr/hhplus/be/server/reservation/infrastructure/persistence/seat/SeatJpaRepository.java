@@ -1,21 +1,20 @@
-package kr.hhplus.be.server.reservationInfo.repository;
+package kr.hhplus.be.server.reservation.infrastructure.persistence.seat;
 
 import jakarta.persistence.LockModeType;
 import jakarta.persistence.QueryHint;
 import java.util.List;
 import java.util.Optional;
-import kr.hhplus.be.server.reservationInfo.domain.Seat;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
 
-public interface SeatRepository extends JpaRepository<Seat, Long> {
+public interface SeatJpaRepository extends JpaRepository<SeatEntity, Long> {
 
-    List<Seat> findByConcertScheduleId(Long scheduleId);
+    List<SeatEntity> findByConcertScheduleId(Long scheduleId);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @Query("select s from Seat s where s.id = :seatId")
+    @Query("select s from SeatEntity s where s.id = :seatId")
     @QueryHints(@QueryHint(name="javax.persistence.lock.timeout", value = "3000"))
-    Optional<Seat> findByIdForUpdate(Long seatId);
+    Optional<SeatEntity> findByIdForUpdate(Long seatId);
 }
