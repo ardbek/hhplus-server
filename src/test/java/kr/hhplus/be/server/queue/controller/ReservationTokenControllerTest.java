@@ -12,8 +12,8 @@ import kr.hhplus.be.server.queue.domain.QueueToken;
 import kr.hhplus.be.server.queue.domain.TokenStatus;
 import kr.hhplus.be.server.queue.dto.request.QueueTokenIssueRequest;
 import kr.hhplus.be.server.queue.dto.response.QueueStatusResponse;
-import kr.hhplus.be.server.queue.dto.response.QueueTokenIssueResponse;
 import kr.hhplus.be.server.queue.service.QueueTokenService;
+import kr.hhplus.be.server.reservation.interfaces.web.controller.ReservationTokenController;
 import kr.hhplus.be.server.user.domain.User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,8 +23,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-@WebMvcTest(QueueController.class)
-public class QueueControllerTest {
+@WebMvcTest(ReservationTokenController.class)
+public class ReservationTokenControllerTest {
 
     @Autowired
     private MockMvc mockMvc;

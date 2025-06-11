@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.reservation.interfaces.web;
+package kr.hhplus.be.server.reservation.interfaces.web.controller;
 
 import kr.hhplus.be.server.reservation.application.ConfirmPaymentUseCase;
 import kr.hhplus.be.server.reservation.application.ReserveTemporarySeatUseCase;

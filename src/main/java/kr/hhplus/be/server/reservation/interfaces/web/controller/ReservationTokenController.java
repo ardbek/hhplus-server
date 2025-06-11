@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.queue.controller;
+package kr.hhplus.be.server.reservation.interfaces.web.controller;
 
 import kr.hhplus.be.server.queue.dto.request.QueueTokenIssueRequest;
 import kr.hhplus.be.server.queue.dto.response.QueueStatusResponse;
@@ -18,26 +18,31 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/queue")
 @RequiredArgsConstructor
-public class QueueController {
+public class ReservationTokenController {
 
-    private final QueueTokenService queueTokenService;
+    private final IssueReservationTokenUseCase issueReservationTokenUseCase;
+    private final CheckQueueStatusUseCase checkQueueStatusUseCase;
 
     // 대기열 토큰 발급 api
-    @PostMapping("/token")
+    @PostMapping("/tokens")
     public ResponseEntity<QueueTokenIssueResponse> issue(@RequestBody QueueTokenIssueRequest request) {
-        QueueToken token = queueTokenService.issueToken(request.userId());
+        String token = issueReservationTokenUseCase.issueReservationToken(request.userId());
 
-        QueueTokenIssueResponse queueTokenIssueResponse = new QueueTokenIssueResponse(
-                token.getUser().getId(), token.getToken(), token.getStatus().name(), token.getIssuedAt(),
-                token.getExpiresAt());
-
-        return ResponseEntity.ok(queueTokenIssueResponse);
+//        QueueTokenIssueResponse queueTokenIssueResponse = new QueueTokenIssueResponse(
+//                token.getUser().getId(), token.getToken(), token.getStatus().name(), token.getIssuedAt(),
+//                token.getExpiresAt());
+//
+//        return ResponseEntity.ok(queueTokenIssueResponse);
+        return null;
     }
 
     // 대기 번호 조회 api
     @GetMapping("/status")
     public ResponseEntity<QueueStatusResponse> getStatus(@RequestParam String token) {
-        return ResponseEntity.ok(queueTokenService.checkStatus(token));
+
+//        ReservationTokenStatusResponse response = checkQueueStatusUseCase.checkStatus(token);
+//        return ResponseEntity.ok();
+        return null;
     }
 
 }

@@ -12,8 +12,6 @@ import org.springframework.data.repository.query.Param;
 
 public interface QueueTokenRepository extends JpaRepository<QueueToken, Long> {
 
-    boolean existsByUserIdAndStatus(Long userId, TokenStatus tokenStatus);
-
     Optional<QueueToken> findByToken(String token);
 
     @Modifying
