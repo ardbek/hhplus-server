@@ -1,10 +1,10 @@
 package kr.hhplus.be.server.queue.controller;
 
-import kr.hhplus.be.server.queue.domain.QueueToken;
 import kr.hhplus.be.server.queue.dto.request.QueueTokenIssueRequest;
 import kr.hhplus.be.server.queue.dto.response.QueueStatusResponse;
 import kr.hhplus.be.server.queue.dto.response.QueueTokenIssueResponse;
-import kr.hhplus.be.server.queue.service.QueueTokenService;
+import kr.hhplus.be.server.reservation.application.reservationToken.CheckQueueStatusUseCase;
+import kr.hhplus.be.server.reservation.application.reservationToken.IssueReservationTokenUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

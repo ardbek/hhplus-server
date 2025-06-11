@@ -22,8 +22,8 @@ import kr.hhplus.be.server.reservationInfo.domain.Seat;
 import kr.hhplus.be.server.reservationInfo.repository.SeatRepository;
 import kr.hhplus.be.server.user.domain.User;
 import kr.hhplus.be.server.user.repository.UserRepository;
-import kr.hhplus.be.server.wallet.domain.Balance;
-import kr.hhplus.be.server.wallet.repository.BalanceRepository;
+import kr.hhplus.be.server.reservation.infrastructure.persistence.balance.BalanceEntity;
+import kr.hhplus.be.server.reservation.infrastructure.persistence.balance.BalanceJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -35,7 +35,7 @@ public class ConfirmPaymentUseCaseTest {
 
     @Mock private ReservationRepository reservationRepository;
     @Mock private PaymentRepository paymentRepository;
-    @Mock private BalanceRepository balanceRepository;
+    @Mock private BalanceJpaRepository balanceJpaRepository;
     @Mock private SeatRepository seatRepository;
     @Mock private BalanceHistoryRepository balanceHistoryRepository;
     @Mock private QueueTokenRepository queueTokenRepository;
@@ -67,17 +67,17 @@ public class ConfirmPaymentUseCaseTest {
 
         Seat seat = Seat.builder().id(seatId).price(price).build();
         User user = User.builder().id(userId).build();
-        Balance balance = Balance.builder().id(100L).user(user).balance(10_000L).build();
+        BalanceEntity balanceEntity = BalanceEntity.builder().id(100L).user(user).balance(10_000L).build();
 
         given(seatRepository.findById(seatId)).willReturn(Optional.of(seat));
-        given(balanceRepository.findByUserId(userId)).willReturn(Optional.of(balance));
+        given(balanceJpaRepository.findByUserId(userId)).willReturn(Optional.of(balanceEntity));
         given(userRepository.findById(userId)).willReturn(Optional.of(user));
 
         // when
         confirmPaymentUseCase.confirmReservation(userId, reservationId);
 
         // then
-        verify(balanceRepository).save(any(Balance.class));
+        verify(balanceJpaRepository).save(any(BalanceEntity.class));
         verify(paymentRepository).save(any(Payment.class));
         verify(balanceHistoryRepository).save(any(BalanceHistory.class));
         verify(queueTokenRepository).expireTokenByUserId(eq(userId), eq(TokenStatus.EXPIRED), any(), eq(TokenStatus.ACTIVE));

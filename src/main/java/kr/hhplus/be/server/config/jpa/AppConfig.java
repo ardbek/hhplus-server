@@ -8,7 +8,6 @@ import kr.hhplus.be.server.reservation.domain.repository.PaymentRepository;
 import kr.hhplus.be.server.reservation.domain.repository.ReservationRepository;
 import kr.hhplus.be.server.reservationInfo.repository.SeatRepository;
 import kr.hhplus.be.server.user.repository.UserRepository;
-import kr.hhplus.be.server.wallet.repository.BalanceRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -34,7 +33,7 @@ public class AppConfig {
         return new ConfirmPaymentUseCase(
                 reservationRepository,
                 paymentRepository,
-            balanceRepository,
+                balanceRepository,
                 seatRepository,
                 balanceHistoryRepository,
                 queueTokenRepository,

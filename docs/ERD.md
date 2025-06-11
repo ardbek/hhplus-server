@@ -22,7 +22,7 @@ USER ||--o{ RESERVATION_QUEUE : in
     BALANCE {
         bigint id PK
         bigint user_id FK
-        bigint balance
+        bigint balanceEntity
         timestamp created_at
         timestamp updated_at
     }

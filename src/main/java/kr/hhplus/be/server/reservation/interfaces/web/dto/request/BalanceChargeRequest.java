@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.wallet.dto.request;
+package kr.hhplus.be.server.reservation.interfaces.web.dto.request;
 
 public record BalanceChargeRequest(
     Long walletId,

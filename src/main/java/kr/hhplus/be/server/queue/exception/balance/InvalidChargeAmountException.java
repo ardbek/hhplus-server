@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.wallet.exception;
+package kr.hhplus.be.server.queue.exception.balance;
 
 public class InvalidChargeAmountException extends RuntimeException {
 

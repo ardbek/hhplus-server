@@ -7,9 +7,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import kr.hhplus.be.server.wallet.domain.Balance;
-import kr.hhplus.be.server.wallet.dto.request.BalanceChargeRequest;
-import kr.hhplus.be.server.wallet.service.BalanceService;
+import kr.hhplus.be.server.reservation.application.balance.ChargeBalanceUseCase;
+import kr.hhplus.be.server.reservation.application.balance.GetBalanceUseCase;
+import kr.hhplus.be.server.reservation.domain.model.Balance;
+import kr.hhplus.be.server.reservation.interfaces.web.controller.BalanceController;
+import kr.hhplus.be.server.reservation.interfaces.web.dto.request.BalanceChargeRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +21,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(BalanceController.class)
-public class BalanceControllerTest {
+public class BalanceEntityControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -39,7 +41,7 @@ public class BalanceControllerTest {
                 .balance(5_000L)
                 .build();
 
-        given(balanceService.getBalance(1L)).willReturn(balance);
+        given(getBalanceUseCase.getBalance(1L)).willReturn(balance);
 
         // when & then
         mockMvc.perform(get("/api/wallet")
@@ -65,7 +67,7 @@ public class BalanceControllerTest {
                 .balance(totalAmount)
                 .build();
 
-        given(balanceService.charge(1L,chargeAmount)).willReturn(balance);
+        given(chargeBalanceUseCase.charge(1L,chargeAmount)).willReturn(balance);
 
         // when & then
         mockMvc.perform(post("/api/wallet")
