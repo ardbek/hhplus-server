@@ -2,6 +2,7 @@ package kr.hhplus.be.server.reservation;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -9,47 +10,88 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import kr.hhplus.be.server.concert.domain.Concert;
+import kr.hhplus.be.server.concert.repository.ConcertRepository;
 import kr.hhplus.be.server.reservation.application.reservation.ReserveTemporarySeatUseCase;
 import kr.hhplus.be.server.reservation.domain.repository.ReservationRepository;
 import kr.hhplus.be.server.reservation.exception.seat.SeatAlreadyReservedException;
+import kr.hhplus.be.server.reservation.infrastructure.persistence.seat.SeatEntity;
+import kr.hhplus.be.server.reservation.infrastructure.persistence.seat.SeatJpaRepository;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
+import kr.hhplus.be.server.reservation.infrastructure.persistence.concertSchedule.ConcertScheduleEntity;
+import kr.hhplus.be.server.reservation.infrastructure.persistence.concertSchedule.ConcertScheduleJpaRepository;
 
 @SpringBootTest
-@Transactional
 public class ReserveTemporaryConcurrencyTest {
 
-    @Autowired
-    private ReserveTemporarySeatUseCase reserveTemporarySeatUseCase;
+    // (Repositories and UseCase injections are the same)
+    @Autowired private ReserveTemporarySeatUseCase reserveTemporarySeatUseCase;
+    @Autowired private ReservationRepository reservationRepository;
+    @Autowired private SeatJpaRepository seatJpaRepository;
+    @Autowired private ConcertScheduleJpaRepository concertScheduleJpaRepository;
+    @Autowired private ConcertRepository concertRepository;
 
-    @Autowired
-    private ReservationRepository reservationRepository;
+    // 테스트 데이터를 저장할 인스턴스 변수
+    private Long testConcertId;
+    private Long testScheduleId;
+    private Long testSeatId;
+
+    @BeforeEach
+    void setUp() {
+        // ============== 데이터 준비 (given) ==============
+        // 이 부분의 데이터는 각 테스트 시작 전에 생성되고 DB에 commit 됩니다.
+        Concert concert = Concert.builder().id(1L).title("테스트 콘서트").build();
+        concertRepository.save(concert);
+        testConcertId = concert.getId();
+
+        ConcertScheduleEntity schedule = ConcertScheduleEntity.builder()
+            .concert(concert)
+            .startAt(LocalDateTime.now().plusDays(1))
+            .build();
+        concertScheduleJpaRepository.save(schedule);
+        testScheduleId = schedule.getId();
+
+        SeatEntity seatEntity = SeatEntity.builder()
+            .seatNo(1)
+            .concertScheduleEntity(schedule)
+            .price(50_000L)
+            .build();
+        seatJpaRepository.save(seatEntity);
+        testSeatId = seatEntity.getId();
+    }
+
+    @AfterEach
+    void tearDown() {
+        // ============== 데이터 정리 ==============
+        // 생성의 역순으로 데이터를 삭제하여 외래 키 제약 조건 위반을 방지합니다.
+        seatJpaRepository.deleteAll();
+        concertScheduleJpaRepository.deleteAll();
+        concertRepository.deleteAll();
+    }
 
     @Test
     void 동시_좌석예약_중복불가_검증() throws InterruptedException, ExecutionException {
         // given
-        Long userId = 1L;
-        Long concertScheduleId = 1L;
-        Long seatId = 1L;
-
-        int threadCount = 10; // 10명이 동시에 예약 시도
+        int threadCount = 10;
         ExecutorService executor = Executors.newFixedThreadPool(threadCount);
         CountDownLatch latch = new CountDownLatch(threadCount);
 
         List<Future<Boolean>> results = new ArrayList<>();
 
+        // when
         for (int i = 0; i < threadCount; i++) {
-            final Long currentUserId = userId + i;
+            final Long currentUserId = (long) (i + 1); // 유저 ID가 중복되지 않도록 설정
             results.add(executor.submit(() -> {
                 try {
-                    reserveTemporarySeatUseCase.reserveTemporary(currentUserId, concertScheduleId, seatId);
-                    System.out.println("true");
-                    return true; // 성공적으로 예약됨
+                    // @BeforeEach에서 생성된 데이터의 ID를 사용
+                    reserveTemporarySeatUseCase.reserveTemporary(currentUserId, testScheduleId, testSeatId);
+                    return true; // 성공
                 } catch (SeatAlreadyReservedException e) {
-                    System.out.println("false");
-                    return false; // 이미 예약됨 예외 발생
+                    return false; // 실패 (예상된 예외)
                 } finally {
                     latch.countDown();
                 }
@@ -57,23 +99,18 @@ public class ReserveTemporaryConcurrencyTest {
         }
 
         latch.await();
+        executor.shutdown();
 
         // then
-        // 실제로 예약이 1건만 성공하는지 확인
-//        long reservedCount = reservationRepository.countBySeatIdAndScheduleIdAndStatus(
-//                seatId, concertScheduleId, ReservationStatus.LOCKED
-//        );
+        long successCount = results.stream().filter(future -> {
+            try {
+                return future.get();
+            } catch (InterruptedException | ExecutionException e) {
+                return false;
+            }
+        }).count();
 
-        assertThat(1).isEqualTo(1);
-        // (옵션) 성공/실패 로그 출력
-        int successCount = 0;
-        int failCount = 0;
-        for (Future<Boolean> result : results) {
-            if (result.get()) successCount++;
-            else failCount++;
-        }
-        System.out.println("성공: " + successCount + ", 실패: " + failCount);
-
+        System.out.println("성공: " + successCount);
+        assertThat(successCount).isEqualTo(1);
     }
-
 }

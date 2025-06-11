@@ -4,8 +4,8 @@ import java.util.Optional;
 import kr.hhplus.be.server.reservation.domain.ReservationStatus;
 import kr.hhplus.be.server.reservation.domain.model.Reservation;
 import kr.hhplus.be.server.reservation.domain.repository.ReservationRepository;
-import kr.hhplus.be.server.reservationInfo.repository.ConcertScheduleRepository;
-import kr.hhplus.be.server.reservationInfo.repository.SeatRepository;
+import kr.hhplus.be.server.reservation.infrastructure.persistence.concertSchedule.ConcertScheduleJpaRepository;
+import kr.hhplus.be.server.reservation.infrastructure.persistence.seat.SeatJpaRepository;
 import kr.hhplus.be.server.user.repository.UserRepository;
 import org.springframework.stereotype.Repository;
 
@@ -14,15 +14,15 @@ public class ReservationRepositoryImpl implements ReservationRepository {
 
     private final ReservationJpaRepository jpa;
     private final UserRepository userRepository;
-    private final SeatRepository seatRepository;
-    private final ConcertScheduleRepository concertScheduleRepository;
+    private final SeatJpaRepository seatJpaRepository;
+    private final ConcertScheduleJpaRepository concertScheduleJpaRepository;
 
     public ReservationRepositoryImpl(ReservationJpaRepository jpa, UserRepository userRepository,
-            SeatRepository seatRepository, ConcertScheduleRepository concertScheduleRepository) {
+            SeatJpaRepository seatJpaRepository, ConcertScheduleJpaRepository concertScheduleJpaRepository) {
         this.jpa = jpa;
         this.userRepository = userRepository;
-        this.seatRepository = seatRepository;
-        this.concertScheduleRepository = concertScheduleRepository;
+        this.seatJpaRepository = seatJpaRepository;
+        this.concertScheduleJpaRepository = concertScheduleJpaRepository;
     }
 
     @Override
@@ -46,8 +46,8 @@ public class ReservationRepositoryImpl implements ReservationRepository {
         ReservationEntity e = new ReservationEntity();
         e.id = r.getId();
         e.user = userRepository.getReferenceById(r.getUserId());
-        e.concertSchedule = concertScheduleRepository.getReferenceById(r.getConcertScheduleId());
-        e.seat = seatRepository.getReferenceById(r.getSeatId());
+        e.concertScheduleEntity = concertScheduleJpaRepository.getReferenceById(r.getConcertScheduleId());
+        e.seatEntity = seatJpaRepository.getReferenceById(r.getSeatId());
         e.status = r.getStatus();
         e.createdAt = r.getCreatedAt();
         e.updatedAt = r.getUpdatedAt();
@@ -58,8 +58,8 @@ public class ReservationRepositoryImpl implements ReservationRepository {
         return Reservation.builder()
                 .id(e.id)
                 .userId(e.user.getId())
-                .concertScheduleId(e.concertSchedule.getId())
-                .seatId(e.seat.getId())
+                .concertScheduleId(e.concertScheduleEntity.getId())
+                .seatId(e.seatEntity.getId())
                 .status(e.status)
                 .createdAt(e.createdAt)
                 .updatedAt(e.updatedAt)

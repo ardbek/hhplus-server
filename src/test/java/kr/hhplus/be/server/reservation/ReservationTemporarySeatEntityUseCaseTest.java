@@ -18,8 +18,8 @@ import kr.hhplus.be.server.reservation.application.reservation.ReserveTemporaryS
 import kr.hhplus.be.server.reservation.domain.model.Reservation;
 import kr.hhplus.be.server.reservation.domain.repository.ReservationRepository;
 import kr.hhplus.be.server.reservation.exception.seat.SeatAlreadyReservedException;
-import kr.hhplus.be.server.reservationInfo.domain.Seat;
-import kr.hhplus.be.server.reservationInfo.repository.SeatRepository;
+import kr.hhplus.be.server.reservation.infrastructure.persistence.seat.SeatEntity;
+import kr.hhplus.be.server.reservation.infrastructure.persistence.seat.SeatJpaRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -31,13 +31,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.stubbing.Answer;
 
 @ExtendWith(MockitoExtension.class)
-public class ReservationTemporarySeatUseCaseTest {
+public class ReservationTemporarySeatEntityUseCaseTest {
 
     @Mock
     private ReservationRepository reservationRepository;
 
     @Mock
-    private SeatRepository seatRepository;
+    private SeatJpaRepository seatJpaRepository;
 
     @InjectMocks
     private ReserveTemporarySeatUseCase reserveTemporarySeatUseCase;
@@ -45,8 +45,8 @@ public class ReservationTemporarySeatUseCaseTest {
     @BeforeEach
     void setUp() {
         // Seat mock 설정
-        given(seatRepository.findByIdForUpdate(anyLong()))
-            .willReturn(Optional.of(Seat.builder().id(1L).build()));
+        given(seatJpaRepository.findByIdForUpdate(anyLong()))
+            .willReturn(Optional.of(SeatEntity.builder().id(1L).build()));
     }
 
     @Test

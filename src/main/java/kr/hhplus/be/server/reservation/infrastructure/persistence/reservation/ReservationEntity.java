@@ -11,8 +11,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
 import kr.hhplus.be.server.reservation.domain.ReservationStatus;
-import kr.hhplus.be.server.reservationInfo.domain.ConcertSchedule;
-import kr.hhplus.be.server.reservationInfo.domain.Seat;
+import kr.hhplus.be.server.reservation.infrastructure.persistence.concertSchedule.ConcertScheduleEntity;
+import kr.hhplus.be.server.reservation.infrastructure.persistence.seat.SeatEntity;
 import kr.hhplus.be.server.user.domain.User;
 import lombok.Getter;
 
@@ -30,11 +30,11 @@ public class ReservationEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "concert_schedule_id")
-    ConcertSchedule concertSchedule;
+    ConcertScheduleEntity concertScheduleEntity;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "seat_id")
-    Seat seat;
+    SeatEntity seatEntity;
 
     @Enumerated(EnumType.STRING)
     ReservationStatus status; // LOCKED, CONFIRMED, RELEASED

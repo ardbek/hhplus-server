@@ -9,20 +9,20 @@ import kr.hhplus.be.server.reservation.domain.ReservationStatus;
 import kr.hhplus.be.server.reservation.domain.model.Reservation;
 import kr.hhplus.be.server.reservation.domain.repository.ReservationRepository;
 import kr.hhplus.be.server.reservation.exception.seat.SeatAlreadyReservedException;
-import kr.hhplus.be.server.reservationInfo.repository.SeatRepository;
+import kr.hhplus.be.server.reservation.infrastructure.persistence.seat.SeatJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-public class ReserveTemporarySeatUseCaseTest {
+public class ReserveTemporarySeatEntityUseCaseTest {
 
     @Mock
     ReservationRepository reservationRepository;
 
     @Mock
-    SeatRepository seatRepository;
+    SeatJpaRepository seatJpaRepository;
 
     ReserveTemporarySeatUseCase reserveTemporarySeatUseCase;
 
@@ -30,7 +30,7 @@ public class ReserveTemporarySeatUseCaseTest {
     void setup() {
         MockitoAnnotations.openMocks(this);
         reserveTemporarySeatUseCase = new ReserveTemporarySeatUseCase(reservationRepository,
-                seatRepository);
+            seatJpaRepository);
     }
 
     @Test
