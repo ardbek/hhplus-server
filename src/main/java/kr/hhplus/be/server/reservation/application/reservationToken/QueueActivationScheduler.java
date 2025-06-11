@@ -17,7 +17,7 @@ public class QueueActivationScheduler {
     public void activateWaitingUsers() {
         Set<Long> activationTargets = tokenRepository.getTopRankedUsers(ACTIVE_USER_COUNT);
 
-        if (!activationTargets.isEmpty()) {
+        if (activationTargets.isEmpty()) {
             return;
         }
 

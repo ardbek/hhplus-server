@@ -57,7 +57,6 @@ class QueueActivationSchedulerTest {
         queueActivationScheduler.activateWaitingUsers();
 
         // then
-        // 활성화 및 제거 로직이 전혀 호출되지 않았는지 검증
         verify(reservationTokenRepository, never()).setActiveUser(anyLong());
         verify(reservationTokenRepository, never()).removeFromWaiting(anyLong());
     }

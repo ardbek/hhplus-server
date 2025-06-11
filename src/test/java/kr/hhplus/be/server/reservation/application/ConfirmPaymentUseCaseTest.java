@@ -14,18 +14,18 @@ import kr.hhplus.be.server.queue.domain.TokenStatus;
 import kr.hhplus.be.server.queue.repository.QueueTokenRepository;
 import kr.hhplus.be.server.reservation.application.reservation.ConfirmPaymentUseCase;
 import kr.hhplus.be.server.reservation.domain.ReservationStatus;
+import kr.hhplus.be.server.reservation.domain.model.Balance;
 import kr.hhplus.be.server.reservation.domain.model.Payment;
 import kr.hhplus.be.server.reservation.domain.model.Reservation;
 import kr.hhplus.be.server.reservation.domain.repository.PaymentRepository;
 import kr.hhplus.be.server.reservation.domain.repository.ReservationRepository;
 import kr.hhplus.be.server.reservation.exception.reservation.NotTemporaryReservationException;
 import kr.hhplus.be.server.reservation.exception.reservation.NotYourReservationException;
-import kr.hhplus.be.server.reservationInfo.domain.Seat;
-import kr.hhplus.be.server.reservationInfo.repository.SeatRepository;
+import kr.hhplus.be.server.reservation.infrastructure.persistence.seat.SeatEntity;
+import kr.hhplus.be.server.reservation.infrastructure.persistence.seat.SeatJpaRepository;
 import kr.hhplus.be.server.user.domain.User;
 import kr.hhplus.be.server.user.repository.UserRepository;
-import kr.hhplus.be.server.reservation.infrastructure.persistence.balance.BalanceEntity;
-import kr.hhplus.be.server.reservation.infrastructure.persistence.balance.BalanceJpaRepository;
+import kr.hhplus.be.server.reservation.domain.repository.BalanceRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -37,8 +37,8 @@ public class ConfirmPaymentUseCaseTest {
 
     @Mock private ReservationRepository reservationRepository;
     @Mock private PaymentRepository paymentRepository;
-    @Mock private BalanceJpaRepository balanceJpaRepository;
-    @Mock private SeatRepository seatRepository;
+    @Mock private BalanceRepository balanceRepository;
+    @Mock private SeatJpaRepository seatJpaRepository;
     @Mock private BalanceHistoryRepository balanceHistoryRepository;
     @Mock private QueueTokenRepository queueTokenRepository;
     @Mock private UserRepository userRepository;
@@ -67,19 +67,19 @@ public class ConfirmPaymentUseCaseTest {
 
         given(reservationRepository.findById(reservationId)).willReturn(Optional.of(reservation));
 
-        Seat seat = Seat.builder().id(seatId).price(price).build();
+        SeatEntity seatEntity = SeatEntity.builder().id(seatId).price(price).build();
         User user = User.builder().id(userId).build();
-        BalanceEntity balanceEntity = BalanceEntity.builder().id(100L).user(user).balance(10_000L).build();
+        Balance balance = Balance.builder().id(100L).userId(user.getId()).balance(10_000L).build();
 
-        given(seatRepository.findById(seatId)).willReturn(Optional.of(seat));
-        given(balanceJpaRepository.findByUserId(userId)).willReturn(Optional.of(balanceEntity));
+        given(seatJpaRepository.findById(seatId)).willReturn(Optional.of(seatEntity));
+        given(balanceRepository.findByUserId(userId)).willReturn(Optional.of(balance));
         given(userRepository.findById(userId)).willReturn(Optional.of(user));
 
         // when
         confirmPaymentUseCase.confirmReservation(userId, reservationId);
 
         // then
-        verify(balanceJpaRepository).save(any(BalanceEntity.class));
+        verify(balanceRepository).save(any(Balance.class));
         verify(paymentRepository).save(any(Payment.class));
         verify(balanceHistoryRepository).save(any(BalanceHistory.class));
         verify(queueTokenRepository).expireTokenByUserId(eq(userId), eq(TokenStatus.EXPIRED), any(), eq(TokenStatus.ACTIVE));
