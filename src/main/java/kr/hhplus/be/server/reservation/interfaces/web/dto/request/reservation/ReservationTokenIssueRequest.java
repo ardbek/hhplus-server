@@ -1,6 +1,4 @@
-package kr.hhplus.be.server.reservation.interfaces.web.dto.request;
-
-import io.swagger.v3.oas.annotations.media.Schema;
+package kr.hhplus.be.server.reservation.interfaces.web.dto.request.reservation;
 
 /**
  * 토큰 발급 요청 DTO
