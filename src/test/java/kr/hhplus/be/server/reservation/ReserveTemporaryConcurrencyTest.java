@@ -28,22 +28,18 @@ import kr.hhplus.be.server.reservation.infrastructure.persistence.concertSchedul
 @SpringBootTest
 public class ReserveTemporaryConcurrencyTest {
 
-    // (Repositories and UseCase injections are the same)
     @Autowired private ReserveTemporarySeatUseCase reserveTemporarySeatUseCase;
     @Autowired private ReservationRepository reservationRepository;
     @Autowired private SeatJpaRepository seatJpaRepository;
     @Autowired private ConcertScheduleJpaRepository concertScheduleJpaRepository;
     @Autowired private ConcertRepository concertRepository;
 
-    // 테스트 데이터를 저장할 인스턴스 변수
     private Long testConcertId;
     private Long testScheduleId;
     private Long testSeatId;
 
     @BeforeEach
     void setUp() {
-        // ============== 데이터 준비 (given) ==============
-        // 이 부분의 데이터는 각 테스트 시작 전에 생성되고 DB에 commit 됩니다.
         Concert concert = Concert.builder().id(1L).title("테스트 콘서트").build();
         concertRepository.save(concert);
         testConcertId = concert.getId();
