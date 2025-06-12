@@ -80,7 +80,7 @@ public class Reservation {
      * 예약 잠금 해제
      */
     public void release() {
-        if(this.status != ReservationStatus.LOCKED) {
+        if(this.status == ReservationStatus.LOCKED) {
             this.status = ReservationStatus.RELEASED;
             this.updatedAt = LocalDateTime.now();
         }

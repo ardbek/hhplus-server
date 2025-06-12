@@ -8,8 +8,8 @@ import kr.hhplus.be.server.reservation.application.reservation.GetAvailableSeats
 import kr.hhplus.be.server.reservation.application.reservation.ReserveTemporarySeatUseCase;
 import kr.hhplus.be.server.reservation.domain.model.Reservation;
 import kr.hhplus.be.server.reservation.infrastructure.persistence.seat.SeatEntity;
-import kr.hhplus.be.server.reservation.interfaces.web.dto.response.AvailableDatesResponse;
-import kr.hhplus.be.server.reservation.interfaces.web.dto.response.AvailableSeatsResponse;
+import kr.hhplus.be.server.reservation.interfaces.web.dto.response.reservation.AvailableDatesResponse;
+import kr.hhplus.be.server.reservation.interfaces.web.dto.response.reservation.AvailableSeatsResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

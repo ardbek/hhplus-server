@@ -3,7 +3,7 @@ package kr.hhplus.be.server.reservation.application.reservationToken;
 import kr.hhplus.be.server.queue.domain.TokenStatus;
 import kr.hhplus.be.server.queue.exception.TokenNotFoundException;
 import kr.hhplus.be.server.reservation.domain.repository.ReservationTokenRepository;
-import kr.hhplus.be.server.reservation.interfaces.web.dto.response.ReservationTokenStatusResponse;
+import kr.hhplus.be.server.reservation.interfaces.web.dto.response.reservation.ReservationTokenStatusResponse;
 
 public class CheckQueueStatusUseCase {
 
