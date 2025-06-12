@@ -7,7 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
  * @param userId - 유저 번호
  * @param chargeAmount - 충전 금액
  */
-public record BalanceChargeRequest(
+public record MockBalanceChargeRequest(
     @Schema(description = "유저 번호", example = "1")
     String userId,
 

@@ -3,7 +3,7 @@ package kr.hhplus.be.server.stub.mock;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import kr.hhplus.be.server.stub.mock.dto.request.BalanceChargeRequest;
+import kr.hhplus.be.server.stub.mock.dto.request.MockBalanceChargeRequest;
 import kr.hhplus.be.server.stub.mock.dto.response.BalanceResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,7 +26,7 @@ public class MockBalanceController {
 
     @Operation(summary = "잔액 충전", description = "잔액 충전")
     @PostMapping
-    public ResponseEntity<BalanceResponse> charge(@RequestBody BalanceChargeRequest request) {
+    public ResponseEntity<BalanceResponse> charge(@RequestBody MockBalanceChargeRequest request) {
         return ResponseEntity.ok(new BalanceResponse(request.userId(), request.chargeAmount()));
     }
 

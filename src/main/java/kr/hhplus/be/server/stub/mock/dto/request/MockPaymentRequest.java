@@ -8,7 +8,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
  * @param seatId - 좌석 번호
  * @param token - 대기열 토큰
  */
-public record PaymentRequest(
+public record MockPaymentRequest(
         @Schema(description = "유저 번호", example = "1")
         String userId,
 

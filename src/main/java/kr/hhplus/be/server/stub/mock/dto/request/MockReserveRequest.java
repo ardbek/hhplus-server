@@ -7,7 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
  * @param seatId - 예약할 좌석 번호
  * @param reserveDate - 예약할 날짜
  */
-public record ReserveRequest(
+public record MockReserveRequest(
         @Schema(description = "좌석 번호", example = "1")
         String seatId,
 
