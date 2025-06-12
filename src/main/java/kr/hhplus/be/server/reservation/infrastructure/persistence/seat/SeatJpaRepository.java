@@ -11,7 +11,7 @@ import org.springframework.data.jpa.repository.QueryHints;
 
 public interface SeatJpaRepository extends JpaRepository<SeatEntity, Long> {
 
-    List<SeatEntity> findByConcertScheduleId(Long scheduleId);
+    List<SeatEntity> findByConcertScheduleEntity_Id(Long scheduleId);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select s from SeatEntity s where s.id = :seatId")

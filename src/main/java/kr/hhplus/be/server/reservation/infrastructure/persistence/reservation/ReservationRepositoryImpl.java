@@ -40,7 +40,7 @@ public class ReservationRepositoryImpl implements ReservationRepository {
 
     @Override
     public boolean existsLocked(Long seatId, Long concertScheduleId) {
-        return jpa.findBySeatIdAndConcertScheduleIdAndStatus(seatId, concertScheduleId, ReservationStatus.LOCKED).isPresent();
+        return jpa.findReservation(seatId, concertScheduleId, ReservationStatus.LOCKED).isPresent();
     }
 
     @Override

@@ -18,8 +18,8 @@ public class GetAvailableSeatsUseCase {
     }
 
     public List<SeatEntity> getAvailableSeats(Long scheduleId) {
-        List<Long> reservedIds = reservationInfoJpaRepository.findByReservedSeatIds(scheduleId, ReservationStatus.reservedStatuses());;
-        return seatJpaRepository.findByConcertScheduleId(scheduleId).stream()
+        List<Long> reservedIds = reservationRepository.findByReservedSeatIds(scheduleId, ReservationStatus.reservedStatuses());;
+        return seatJpaRepository.findByConcertScheduleEntity_Id(scheduleId).stream()
             .filter(seat -> !reservedIds.contains(seat.getId()))
             .toList();
     }
