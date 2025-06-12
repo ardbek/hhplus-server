@@ -76,6 +76,16 @@ public class Reservation {
         this.updatedAt = LocalDateTime.now();
     }
 
+    /**
+     * 예약 잠금 해제
+     */
+    public void release() {
+        if(this.status != ReservationStatus.LOCKED) {
+            this.status = ReservationStatus.RELEASED;
+            this.updatedAt = LocalDateTime.now();
+        }
+    }
+
     public static class Builder {
         private Long id;
         private Long userId;

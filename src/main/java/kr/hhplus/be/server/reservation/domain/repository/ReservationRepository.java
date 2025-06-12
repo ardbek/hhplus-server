@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.reservation.domain.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import kr.hhplus.be.server.reservation.domain.ReservationStatus;
@@ -14,4 +15,6 @@ public interface ReservationRepository {
     boolean existsLocked(Long seatId, Long concertScheduleId);
 
     List<Long> findByReservedSeatIds(Long scheduleId, List<ReservationStatus> statuses);
+
+    List<Reservation> findReservationsToExpire(ReservationStatus status, LocalDateTime now);
 }

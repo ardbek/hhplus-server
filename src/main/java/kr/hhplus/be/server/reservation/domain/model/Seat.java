@@ -22,11 +22,23 @@ public class Seat {
         return new Builder();
     }
 
+    /**
+     * 좌석 예약
+     */
     public void reserve() {
         if (this.status != SeatStatus.AVAILABLE) {
             throw new SeatAlreadyReservedException();
         }
         this.status = SeatStatus.RESERVED;
+    }
+
+    /**
+     * 예약 가능한 상태로 변경
+     */
+    public void makeAvailable() {
+        if (this.status == SeatStatus.RESERVED) {
+            this.status = SeatStatus.AVAILABLE;
+        }
     }
 
     public Long getId() {

@@ -1,7 +1,9 @@
 package kr.hhplus.be.server.reservation.infrastructure.persistence.reservation;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import kr.hhplus.be.server.reservation.domain.ReservationStatus;
 import kr.hhplus.be.server.reservation.domain.model.Reservation;
 import kr.hhplus.be.server.reservation.domain.repository.ReservationRepository;
@@ -46,6 +48,15 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     @Override
     public List<Long> findByReservedSeatIds(Long scheduleId, List<ReservationStatus> statuses) {
         return jpa.findByReservedSeatIds(scheduleId, statuses);
+    }
+
+    // 만료된 모든 예약 조회
+    @Override
+    public List<Reservation> findReservationsToExpire(ReservationStatus status, LocalDateTime now) {
+        return jpa.findReservationsToExpire(status, now)
+                .stream()
+                .map(this::toDomain)
+                .collect(Collectors.toList());
     }
 
     private ReservationEntity toEntity(Reservation r) {

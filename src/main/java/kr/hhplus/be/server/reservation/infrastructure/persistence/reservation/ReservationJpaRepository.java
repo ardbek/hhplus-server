@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.reservation.infrastructure.persistence.reservation;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import kr.hhplus.be.server.reservation.domain.ReservationStatus;
@@ -22,5 +23,9 @@ public interface ReservationJpaRepository extends JpaRepository<ReservationEntit
     /*예약된 좌석 조회*/
     @Query("SELECT r.seatEntity.id FROM ReservationEntity r WHERE r.concertScheduleEntity.id = :scheduleId AND r.status IN :statuses")
     List<Long> findByReservedSeatIds(Long scheduleId, List<ReservationStatus> statuses);
+
+    // 만료된 모든 예약 조회
+    @Query("SELECT r FROM ReservationEntity r WHERE r.status = :status AND r.createdAt < :now")
+    List<ReservationEntity> findReservationsToExpire(@Param("status") ReservationStatus status, @Param("now") LocalDateTime now);
 
 }
