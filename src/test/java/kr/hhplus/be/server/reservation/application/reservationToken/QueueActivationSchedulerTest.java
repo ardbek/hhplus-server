@@ -1,6 +1,5 @@
-package kr.hhplus.be.server.reservation.application;
+package kr.hhplus.be.server.reservation.application.reservationToken;
 
-import kr.hhplus.be.server.reservation.application.reservationToken.QueueActivationScheduler;
 import kr.hhplus.be.server.reservation.domain.repository.ReservationTokenRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

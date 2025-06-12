@@ -1,11 +1,10 @@
-package kr.hhplus.be.server.reservation.application;
+package kr.hhplus.be.server.reservation.application.balance;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.BDDMockito.given;
 
 import java.util.Optional;
-import kr.hhplus.be.server.reservation.application.balance.GetBalanceUseCase;
 import kr.hhplus.be.server.reservation.domain.model.Balance;
 import kr.hhplus.be.server.reservation.domain.repository.BalanceRepository;
 import kr.hhplus.be.server.reservation.exception.balance.BalanceNotFoundException;

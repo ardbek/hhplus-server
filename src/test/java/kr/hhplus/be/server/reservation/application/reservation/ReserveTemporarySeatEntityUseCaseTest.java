@@ -1,10 +1,9 @@
-package kr.hhplus.be.server.reservation.application;
+package kr.hhplus.be.server.reservation.application.reservation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 
-import kr.hhplus.be.server.reservation.application.reservation.ReserveTemporarySeatUseCase;
 import kr.hhplus.be.server.reservation.domain.ReservationStatus;
 import kr.hhplus.be.server.reservation.domain.model.Reservation;
 import kr.hhplus.be.server.reservation.domain.repository.ReservationRepository;

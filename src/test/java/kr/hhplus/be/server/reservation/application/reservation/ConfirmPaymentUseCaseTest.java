@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.reservation.application;
+package kr.hhplus.be.server.reservation.application.reservation;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -12,7 +12,6 @@ import kr.hhplus.be.server.balanceHistory.domain.BalanceHistory;
 import kr.hhplus.be.server.balanceHistory.repository.BalanceHistoryRepository;
 import kr.hhplus.be.server.queue.domain.TokenStatus;
 import kr.hhplus.be.server.queue.repository.QueueTokenRepository;
-import kr.hhplus.be.server.reservation.application.reservation.ConfirmPaymentUseCase;
 import kr.hhplus.be.server.reservation.domain.ReservationStatus;
 import kr.hhplus.be.server.reservation.domain.model.Balance;
 import kr.hhplus.be.server.reservation.domain.model.Payment;

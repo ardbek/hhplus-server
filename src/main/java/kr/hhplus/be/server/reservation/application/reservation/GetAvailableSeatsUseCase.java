@@ -2,18 +2,18 @@ package kr.hhplus.be.server.reservation.application.reservation;
 
 import java.util.List;
 import kr.hhplus.be.server.reservation.domain.ReservationStatus;
+import kr.hhplus.be.server.reservation.domain.repository.ReservationRepository;
 import kr.hhplus.be.server.reservation.infrastructure.persistence.seat.SeatEntity;
-import kr.hhplus.be.server.reservation.infrastructure.persistence.reservation.ReservationInfoJpaRepository;
 import kr.hhplus.be.server.reservation.infrastructure.persistence.seat.SeatJpaRepository;
 
 public class GetAvailableSeatsUseCase {
 
-    private final ReservationInfoJpaRepository reservationInfoJpaRepository;
+    private final ReservationRepository reservationRepository;
     private final SeatJpaRepository seatJpaRepository;
 
-    public GetAvailableSeatsUseCase(ReservationInfoJpaRepository reservationInfoJpaRepository,
+    public GetAvailableSeatsUseCase(ReservationRepository reservationRepository,
         SeatJpaRepository seatJpaRepository) {
-        this.reservationInfoJpaRepository = reservationInfoJpaRepository;
+        this.reservationRepository = reservationRepository;
         this.seatJpaRepository = seatJpaRepository;
     }
 

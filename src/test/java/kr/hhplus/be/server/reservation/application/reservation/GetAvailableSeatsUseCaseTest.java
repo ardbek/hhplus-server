@@ -1,13 +1,12 @@
-package kr.hhplus.be.server.reservation.application;
+package kr.hhplus.be.server.reservation.application.reservation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
 import java.util.List;
-import kr.hhplus.be.server.reservation.application.reservation.GetAvailableSeatsUseCase;
 import kr.hhplus.be.server.reservation.domain.ReservationStatus;
+import kr.hhplus.be.server.reservation.domain.repository.ReservationRepository;
 import kr.hhplus.be.server.reservation.infrastructure.persistence.seat.SeatEntity;
-import kr.hhplus.be.server.reservation.infrastructure.persistence.reservation.ReservationInfoJpaRepository;
 import kr.hhplus.be.server.reservation.infrastructure.persistence.seat.SeatJpaRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,7 +22,7 @@ class GetAvailableSeatsUseCaseTest {
     private GetAvailableSeatsUseCase getAvailableSeatsUseCase;
 
     @Mock
-    private ReservationInfoJpaRepository reservationInfoJpaRepository;
+    private ReservationRepository reservationJpaRepository;
 
     @Mock
     private SeatJpaRepository seatJpaRepository;
@@ -52,8 +51,8 @@ class GetAvailableSeatsUseCaseTest {
 
         List<ReservationStatus> reservedStatuses = ReservationStatus.reservedStatuses();
 
-        given(seatJpaRepository.findByConcertScheduleId(scheduleId)).willReturn(allSeatEntities);
-        given(reservationInfoJpaRepository.findByReservedSeatIds(scheduleId, reservedStatuses)).willReturn(reservedSeatIds);
+        given(seatJpaRepository.findByConcertScheduleEntity_Id(scheduleId)).willReturn(allSeatEntities);
+        given(reservationJpaRepository.findByReservedSeatIds(scheduleId, reservedStatuses)).willReturn(reservedSeatIds);
 
         // when
         List<SeatEntity> availableSeatEntities = getAvailableSeatsUseCase.getAvailableSeats(scheduleId);
@@ -75,8 +74,8 @@ class GetAvailableSeatsUseCaseTest {
         );
         List<ReservationStatus> reservedStatuses = ReservationStatus.reservedStatuses();
 
-        given(seatJpaRepository.findByConcertScheduleId(scheduleId)).willReturn(allSeatEntities);
-        given(reservationInfoJpaRepository.findByReservedSeatIds(scheduleId, reservedStatuses)).willReturn(List.of());
+        given(seatJpaRepository.findByConcertScheduleEntity_Id(scheduleId)).willReturn(allSeatEntities);
+        given(reservationJpaRepository.findByReservedSeatIds(scheduleId, reservedStatuses)).willReturn(List.of());
 
         // when
         List<SeatEntity> availableSeatEntities = getAvailableSeatsUseCase.getAvailableSeats(scheduleId);
@@ -98,8 +97,8 @@ class GetAvailableSeatsUseCaseTest {
         List<ReservationStatus> reservedStatuses = ReservationStatus.reservedStatuses();
 
 
-        given(seatJpaRepository.findByConcertScheduleId(scheduleId)).willReturn(allSeatEntities);
-        given(reservationInfoJpaRepository.findByReservedSeatIds(scheduleId, reservedStatuses)).willReturn(reservedIds);
+        given(seatJpaRepository.findByConcertScheduleEntity_Id(scheduleId)).willReturn(allSeatEntities);
+        given(reservationJpaRepository.findByReservedSeatIds(scheduleId, reservedStatuses)).willReturn(reservedIds);
 
         // when
         List<SeatEntity> availableSeatEntities = getAvailableSeatsUseCase.getAvailableSeats(scheduleId);

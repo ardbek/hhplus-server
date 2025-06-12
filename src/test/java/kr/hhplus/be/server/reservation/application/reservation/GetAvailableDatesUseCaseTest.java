@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.reservation.application;
+package kr.hhplus.be.server.reservation.application.reservation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -6,7 +6,6 @@ import static org.mockito.BDDMockito.given;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import kr.hhplus.be.server.reservation.application.reservation.GetAvailableDatesUseCase;
 import kr.hhplus.be.server.reservation.infrastructure.persistence.concertSchedule.ConcertScheduleEntity;
 import kr.hhplus.be.server.reservation.infrastructure.persistence.concertSchedule.ConcertScheduleJpaRepository;
 import org.junit.jupiter.api.DisplayName;

@@ -16,7 +16,7 @@ import kr.hhplus.be.server.reservation.domain.repository.PaymentRepository;
 import kr.hhplus.be.server.reservation.domain.repository.ReservationRepository;
 import kr.hhplus.be.server.reservation.domain.repository.ReservationTokenRepository;
 import kr.hhplus.be.server.reservation.infrastructure.persistence.concertSchedule.ConcertScheduleJpaRepository;
-import kr.hhplus.be.server.reservation.infrastructure.persistence.reservation.ReservationInfoJpaRepository;
+import kr.hhplus.be.server.reservation.infrastructure.persistence.reservation.ReservationJpaRepository;
 import kr.hhplus.be.server.reservation.infrastructure.persistence.seat.SeatJpaRepository;
 import kr.hhplus.be.server.user.repository.UserRepository;
 import org.springframework.context.annotation.Bean;
@@ -70,8 +70,8 @@ public class AppConfig {
 
     @Bean
     public GetAvailableSeatsUseCase getAvailableSeatsUseCase(
-        ReservationInfoJpaRepository reservationInfoJpaRepository, SeatJpaRepository seatJpaRepository) {
-        return new GetAvailableSeatsUseCase(reservationInfoJpaRepository, seatJpaRepository);
+        ReservationRepository reservationRepository, SeatJpaRepository seatJpaRepository) {
+        return new GetAvailableSeatsUseCase(reservationRepository, seatJpaRepository);
     }
 
 
