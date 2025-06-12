@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.reservation.infrastructure.persistence.reservation;
 
+import java.util.List;
 import java.util.Optional;
 import kr.hhplus.be.server.reservation.domain.ReservationStatus;
 import kr.hhplus.be.server.reservation.domain.model.Reservation;
@@ -40,6 +41,11 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     @Override
     public boolean existsLocked(Long seatId, Long concertScheduleId) {
         return jpa.findBySeatIdAndConcertScheduleIdAndStatus(seatId, concertScheduleId, ReservationStatus.LOCKED).isPresent();
+    }
+
+    @Override
+    public List<Long> findByReservedSeatIds(Long scheduleId, List<ReservationStatus> statuses) {
+        return jpa.findByReservedSeatIds(scheduleId, statuses);
     }
 
     private ReservationEntity toEntity(Reservation r) {
