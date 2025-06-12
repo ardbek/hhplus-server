@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.hhplus.be.server.reservation.application.balance.ChargeBalanceUseCase;
 import kr.hhplus.be.server.reservation.application.balance.GetBalanceUseCase;
 import kr.hhplus.be.server.reservation.domain.model.Balance;
-import kr.hhplus.be.server.reservation.interfaces.web.dto.request.BalanceChargeRequest;
+import kr.hhplus.be.server.reservation.interfaces.web.dto.request.balance.BalanceChargeRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

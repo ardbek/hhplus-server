@@ -44,7 +44,6 @@ public class ReservationTemporarySeatEntityUseCaseTest {
 
     @BeforeEach
     void setUp() {
-        // Seat mock 설정
         given(seatJpaRepository.findByIdForUpdate(anyLong()))
             .willReturn(Optional.of(SeatEntity.builder().id(1L).build()));
     }

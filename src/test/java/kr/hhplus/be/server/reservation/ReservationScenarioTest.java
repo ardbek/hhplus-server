@@ -20,7 +20,7 @@ import kr.hhplus.be.server.reservation.domain.repository.BalanceRepository;
 import kr.hhplus.be.server.reservation.domain.repository.ConcertScheduleRepository;
 import kr.hhplus.be.server.reservation.domain.repository.ReservationRepository;
 import kr.hhplus.be.server.reservation.domain.repository.SeatRepository;
-import kr.hhplus.be.server.reservation.interfaces.web.dto.request.ReservationTokenIssueRequest;
+import kr.hhplus.be.server.reservation.interfaces.web.dto.request.reservation.ReservationTokenIssueRequest;
 import kr.hhplus.be.server.reservation.interfaces.web.dto.request.reservation.ReservationConfirmRequest;
 import kr.hhplus.be.server.reservation.interfaces.web.dto.request.reservation.ReservationRequest;
 import kr.hhplus.be.server.user.domain.User;
