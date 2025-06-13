@@ -19,7 +19,7 @@ import kr.hhplus.be.server.reservation.domain.model.ConcertSchedule;
 import kr.hhplus.be.server.reservation.domain.model.Seat;
 import kr.hhplus.be.server.reservation.domain.repository.ConcertScheduleRepository;
 import kr.hhplus.be.server.reservation.domain.repository.SeatRepository;
-import kr.hhplus.be.server.reservation.interfaces.web.controller.ReservationController.ReserveRequest;
+import kr.hhplus.be.server.reservation.interfaces.web.dto.request.reservation.ReservationRequest;
 import kr.hhplus.be.server.user.domain.User;
 import kr.hhplus.be.server.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -82,7 +82,7 @@ class ReservationConcurrencyIntegrationTest {
         for (User user : users) {
             Future<Integer> future = executorService.submit(() -> {
                 try {
-                    ReserveRequest request = new ReserveRequest(user.getId(), testSeat.getConcertScheduleId(), testSeat.getId());
+                    ReservationRequest request = new ReservationRequest(user.getId(), testSeat.getConcertScheduleId(), testSeat.getId());
                     ResultActions result = mockMvc.perform(post("/api/reservation/reserve-temporary")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)));

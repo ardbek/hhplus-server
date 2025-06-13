@@ -18,7 +18,7 @@ import kr.hhplus.be.server.reservation.domain.model.Seat;
 import kr.hhplus.be.server.reservation.domain.repository.ConcertScheduleRepository;
 import kr.hhplus.be.server.reservation.domain.repository.ReservationRepository;
 import kr.hhplus.be.server.reservation.domain.repository.SeatRepository;
-import kr.hhplus.be.server.reservation.interfaces.web.controller.ReservationController.ReserveRequest;
+import kr.hhplus.be.server.reservation.interfaces.web.dto.request.reservation.ReservationRequest;
 import kr.hhplus.be.server.user.domain.User;
 import kr.hhplus.be.server.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -69,7 +69,7 @@ class ReservationExpirationIntegrationTest {
     @Test
     @DisplayName("임시 예약이 만료된 후 다른 사용자가 해당 좌석을 예약할 수 있다.")
     void after_reservation_expires_another_user_can_reserve_seat() throws Exception {
-        ReserveRequest userARequest = new ReserveRequest(userA.getId(), testSeat.getConcertScheduleId(), testSeat.getId());
+        ReservationRequest userARequest = new ReservationRequest(userA.getId(), testSeat.getConcertScheduleId(), testSeat.getId());
 
         MvcResult reserveResult = mockMvc.perform(post("/api/reservation/reserve-temporary")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -91,7 +91,7 @@ class ReservationExpirationIntegrationTest {
             });
 
         User userB = userRepository.save(User.builder().build());
-        ReserveRequest userBRequest = new ReserveRequest(userB.getId(), testSeat.getConcertScheduleId(), testSeat.getId());
+        ReservationRequest userBRequest = new ReservationRequest(userB.getId(), testSeat.getConcertScheduleId(), testSeat.getId());
 
         mockMvc.perform(post("/api/reservation/reserve-temporary")
                 .contentType(MediaType.APPLICATION_JSON)

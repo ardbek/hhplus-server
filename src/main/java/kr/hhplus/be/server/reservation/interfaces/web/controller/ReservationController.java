@@ -8,6 +8,8 @@ import kr.hhplus.be.server.reservation.application.reservation.GetAvailableSeats
 import kr.hhplus.be.server.reservation.application.reservation.ReserveTemporarySeatUseCase;
 import kr.hhplus.be.server.reservation.domain.model.Reservation;
 import kr.hhplus.be.server.reservation.infrastructure.persistence.seat.SeatEntity;
+import kr.hhplus.be.server.reservation.interfaces.web.dto.request.reservation.ReservationRequest;
+import kr.hhplus.be.server.reservation.interfaces.web.dto.request.reservation.ReserveConfirmRequest;
 import kr.hhplus.be.server.reservation.interfaces.web.dto.response.reservation.AvailableDatesResponse;
 import kr.hhplus.be.server.reservation.interfaces.web.dto.response.reservation.AvailableSeatsResponse;
 import org.springframework.http.ResponseEntity;
@@ -59,7 +61,7 @@ public class ReservationController {
      * @return
      */
     @PostMapping("/reserve-temporary")
-    public Reservation reserveTemporary(@RequestBody ReserveRequest request) {
+    public Reservation reserveTemporary(@RequestBody ReservationRequest request) {
         return reserveTemporarySeatUseCase.reserveTemporary(request.userId(), request.concertScheduleId(), request.seatId());
     }
 
@@ -68,10 +70,8 @@ public class ReservationController {
      * @param request
      */
     @PostMapping("/reserve-confirm")
-    public void confirmReservation(@RequestBody ConfirmRequest request) {
+    public void confirmReservation(@RequestBody ReserveConfirmRequest request) {
         confirmPaymentUseCase.confirmReservation(request.userId(), request.reservationId());
     }
 
-    public static record ReserveRequest(Long userId, Long concertScheduleId, Long seatId) {}
-    public static record ConfirmRequest(Long userId, Long reservationId) {}
 }
