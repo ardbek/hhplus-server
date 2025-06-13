@@ -38,7 +38,7 @@ public class IssueReservationTokenUseCaseTest {
     void issueReservationToken_success() {
         // given
         Long userId = 1L;
-        User user =User.builder().id(userId).build();
+        User user = User.builder().id(userId).build();
 
         given(userRepository.findById(userId)).willReturn(Optional.of(user));
         given(reservationTokenRepository.isActiveUser(userId)).willReturn(false);

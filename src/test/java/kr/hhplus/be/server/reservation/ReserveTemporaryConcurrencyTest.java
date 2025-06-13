@@ -62,8 +62,6 @@ public class ReserveTemporaryConcurrencyTest {
 
     @AfterEach
     void tearDown() {
-        // ============== 데이터 정리 ==============
-        // 생성의 역순으로 데이터를 삭제하여 외래 키 제약 조건 위반을 방지합니다.
         seatJpaRepository.deleteAll();
         concertScheduleJpaRepository.deleteAll();
         concertRepository.deleteAll();
@@ -80,14 +78,13 @@ public class ReserveTemporaryConcurrencyTest {
 
         // when
         for (int i = 0; i < threadCount; i++) {
-            final Long currentUserId = (long) (i + 1); // 유저 ID가 중복되지 않도록 설정
+            final Long currentUserId = (long) (i + 1);
             results.add(executor.submit(() -> {
                 try {
-                    // @BeforeEach에서 생성된 데이터의 ID를 사용
                     reserveTemporarySeatUseCase.reserveTemporary(currentUserId, testScheduleId, testSeatId);
                     return true; // 성공
                 } catch (SeatAlreadyReservedException e) {
-                    return false; // 실패 (예상된 예외)
+                    return false; // 실패
                 } finally {
                     latch.countDown();
                 }

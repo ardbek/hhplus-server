@@ -25,13 +25,11 @@ public class IssueReservationTokenUseCase {
 
         // 이미 활성 상태인지 확인
         if (tokenRepository.isActiveUser(userId)) {
-            System.out.println("이미 활성 상태");
             throw new AlreadyInQueueException(); // todo 예외 분리
         }
 
         // 이미 대기열에 있는지 확인
         if (tokenRepository.getRank(userId) != null) {
-            System.out.println("이미 대기열 상태");
             throw new AlreadyInQueueException();
         }
 
