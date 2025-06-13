@@ -1,6 +1,6 @@
 package kr.hhplus.be.server.reservation.application.reservationToken;
 
-import kr.hhplus.be.server.queue.exception.AlreadyInQueueException;
+import kr.hhplus.be.server.reservation.exception.reservationToken.AlreadyInQueueException;
 import kr.hhplus.be.server.reservation.domain.repository.ReservationTokenRepository;
 import kr.hhplus.be.server.user.domain.User;
 import kr.hhplus.be.server.user.exception.UserNotFoundException;

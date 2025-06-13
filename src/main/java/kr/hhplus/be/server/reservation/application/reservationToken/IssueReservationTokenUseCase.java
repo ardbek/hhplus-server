@@ -1,7 +1,7 @@
 package kr.hhplus.be.server.reservation.application.reservationToken;
 
 import java.util.UUID;
-import kr.hhplus.be.server.queue.exception.AlreadyInQueueException;
+import kr.hhplus.be.server.reservation.exception.reservationToken.AlreadyInQueueException;
 import kr.hhplus.be.server.reservation.domain.repository.ReservationTokenRepository;
 import kr.hhplus.be.server.user.exception.UserNotFoundException;
 import kr.hhplus.be.server.user.repository.UserRepository;

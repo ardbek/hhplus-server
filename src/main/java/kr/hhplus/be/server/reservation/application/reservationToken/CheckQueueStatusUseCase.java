@@ -1,7 +1,7 @@
 package kr.hhplus.be.server.reservation.application.reservationToken;
 
-import kr.hhplus.be.server.queue.domain.TokenStatus;
-import kr.hhplus.be.server.queue.exception.TokenNotFoundException;
+import kr.hhplus.be.server.reservation.domain.ReservationTokenStatus;
+import kr.hhplus.be.server.reservation.exception.reservationToken.TokenNotFoundException;
 import kr.hhplus.be.server.reservation.domain.repository.ReservationTokenRepository;
 import kr.hhplus.be.server.reservation.interfaces.web.dto.response.reservation.ReservationTokenStatusResponse;
 
@@ -28,7 +28,7 @@ public class CheckQueueStatusUseCase {
 
         // 이미 활성 상태인지 확인
         if (tokenRepository.isActiveUser(userId)) {
-            return new ReservationTokenStatusResponse(TokenStatus.ACTIVE.name(), 0L);
+            return new ReservationTokenStatusResponse(ReservationTokenStatus.ACTIVE.name(), 0L);
         }
 
         // 대기 순번 확인
@@ -38,7 +38,7 @@ public class CheckQueueStatusUseCase {
         }
 
         // 아직 대기중인 경우
-        return new ReservationTokenStatusResponse(TokenStatus.WAITING.name(), rank + 1);
+        return new ReservationTokenStatusResponse(ReservationTokenStatus.WAITING.name(), rank + 1);
 
     }
 

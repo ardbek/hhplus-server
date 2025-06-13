@@ -10,7 +10,7 @@ import java.util.Optional;
 
 import kr.hhplus.be.server.balanceHistory.domain.BalanceHistory;
 import kr.hhplus.be.server.balanceHistory.repository.BalanceHistoryRepository;
-import kr.hhplus.be.server.queue.domain.TokenStatus;
+import kr.hhplus.be.server.reservation.domain.ReservationTokenStatus;
 import kr.hhplus.be.server.queue.repository.QueueTokenRepository;
 import kr.hhplus.be.server.reservation.domain.ReservationStatus;
 import kr.hhplus.be.server.reservation.domain.model.Balance;
@@ -81,7 +81,8 @@ public class ConfirmPaymentUseCaseTest {
         verify(balanceRepository).save(any(Balance.class));
         verify(paymentRepository).save(any(Payment.class));
         verify(balanceHistoryRepository).save(any(BalanceHistory.class));
-        verify(queueTokenRepository).expireTokenByUserId(eq(userId), eq(TokenStatus.EXPIRED), any(), eq(TokenStatus.ACTIVE));
+        verify(queueTokenRepository).expireTokenByUserId(eq(userId), eq(ReservationTokenStatus.EXPIRED), any(), eq(
+                ReservationTokenStatus.ACTIVE));
         verify(reservationRepository).save(any(Reservation.class));
     }
 

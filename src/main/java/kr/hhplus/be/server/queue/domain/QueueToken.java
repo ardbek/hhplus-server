@@ -9,6 +9,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
 import kr.hhplus.be.server.common.persistence.BaseTimeEntity;
+import kr.hhplus.be.server.reservation.domain.ReservationTokenStatus;
 import kr.hhplus.be.server.user.domain.User;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -33,14 +34,14 @@ public class QueueToken extends BaseTimeEntity {
     private String token;
 
     @Enumerated(EnumType.STRING)
-    private TokenStatus status; // WAITING, ACTIVE, EXPIRED
+    private ReservationTokenStatus status; // WAITING, ACTIVE, EXPIRED
 
     private LocalDateTime issuedAt;
 
     private LocalDateTime expiresAt;
 
     public void active() {
-        this.status = TokenStatus.ACTIVE;
+        this.status = ReservationTokenStatus.ACTIVE;
     }
 
 }

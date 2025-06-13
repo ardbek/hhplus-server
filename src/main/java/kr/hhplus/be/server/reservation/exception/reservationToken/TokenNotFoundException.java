@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.queue.exception;
+package kr.hhplus.be.server.reservation.exception.reservationToken;
 
 public class TokenNotFoundException extends RuntimeException {
 

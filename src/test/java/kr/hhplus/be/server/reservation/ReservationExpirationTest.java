@@ -19,7 +19,7 @@ import kr.hhplus.be.server.reservation.domain.model.Seat;
 import kr.hhplus.be.server.reservation.domain.repository.ConcertScheduleRepository;
 import kr.hhplus.be.server.reservation.domain.repository.ReservationRepository;
 import kr.hhplus.be.server.reservation.domain.repository.SeatRepository;
-import kr.hhplus.be.server.reservation.interfaces.web.dto.request.reservation.ReservationRequest;
+import kr.hhplus.be.server.reservation.interfaces.web.dto.request.reservation.ReserveRequest;
 import kr.hhplus.be.server.user.domain.User;
 import kr.hhplus.be.server.user.repository.UserRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -34,7 +34,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -77,7 +76,7 @@ class ReservationExpirationTest {
     @DisplayName("임시 예약이 만료된 후 다른 사용자가 해당 좌석을 예약할 수 있다.")
     void after_reservation_expires_another_user_can_reserve_seat() throws Exception {
         // --- 1단계: UserA가 좌석을 임시 예약 ---
-        ReservationRequest userARequest = new ReservationRequest(userA.getId(), testSeat.getId(), testSeat.getConcertScheduleId());
+        ReserveRequest userARequest = new ReserveRequest(userA.getId(), testSeat.getId(), testSeat.getConcertScheduleId());
 
         MvcResult reserveResult = mockMvc.perform(post("/api/reservation/reserve-temporary")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -100,7 +99,7 @@ class ReservationExpirationTest {
 
         // --- 3단계: UserB가 동일한 좌석을 예약 시도 ---
         User userB = userRepository.save(User.builder().build());
-        ReservationRequest userBRequest = new ReservationRequest(userB.getId(), testSeat.getId(), testSeat.getConcertScheduleId());
+        ReserveRequest userBRequest = new ReserveRequest(userB.getId(), testSeat.getId(), testSeat.getConcertScheduleId());
 
         mockMvc.perform(post("/api/reservation/reserve-temporary")
                         .contentType(MediaType.APPLICATION_JSON)

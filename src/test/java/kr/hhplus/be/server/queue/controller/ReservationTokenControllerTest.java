@@ -9,7 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import kr.hhplus.be.server.queue.domain.QueueToken;
-import kr.hhplus.be.server.queue.domain.TokenStatus;
+import kr.hhplus.be.server.reservation.domain.ReservationTokenStatus;
 import kr.hhplus.be.server.queue.dto.request.QueueTokenIssueRequest;
 import kr.hhplus.be.server.queue.dto.response.QueueStatusResponse;
 import kr.hhplus.be.server.queue.service.QueueTokenService;
@@ -48,7 +48,7 @@ public class ReservationTokenControllerTest {
         QueueToken token = QueueToken.builder()
                 .user(user)
                 .token("queue-token-123")
-                .status(TokenStatus.WAITING)
+                .status(ReservationTokenStatus.WAITING)
                 .issuedAt(LocalDateTime.now())
                 .expiresAt(LocalDateTime.now().plusMinutes(10))
                 .build();
@@ -63,7 +63,7 @@ public class ReservationTokenControllerTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.userId").value(1L))
             .andExpect(jsonPath("$.token").value("queue-token-123"))
-            .andExpect(jsonPath("$.status").value(TokenStatus.WAITING.name()));
+            .andExpect(jsonPath("$.status").value(ReservationTokenStatus.WAITING.name()));
 
     }
 
@@ -72,7 +72,7 @@ public class ReservationTokenControllerTest {
     void getStatus_success() throws Exception {
         // given
         String token = "queue-token-123";
-        QueueStatusResponse response = new QueueStatusResponse(3, TokenStatus.WAITING.name());
+        QueueStatusResponse response = new QueueStatusResponse(3, ReservationTokenStatus.WAITING.name());
 
         given(queueTokenService.checkStatus(token)).willReturn(response);
 
@@ -81,7 +81,7 @@ public class ReservationTokenControllerTest {
                 .param("token", token))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.position").value(3))
-            .andExpect(jsonPath("$.status").value(TokenStatus.WAITING.name()));
+            .andExpect(jsonPath("$.status").value(ReservationTokenStatus.WAITING.name()));
 
     }
 

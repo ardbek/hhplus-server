@@ -4,8 +4,8 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 
-import kr.hhplus.be.server.queue.domain.TokenStatus;
-import kr.hhplus.be.server.queue.exception.TokenNotFoundException;
+import kr.hhplus.be.server.reservation.domain.ReservationTokenStatus;
+import kr.hhplus.be.server.reservation.exception.reservationToken.TokenNotFoundException;
 import kr.hhplus.be.server.reservation.application.reservationToken.CheckQueueStatusUseCase;
 import kr.hhplus.be.server.reservation.domain.repository.ReservationTokenRepository;
 import kr.hhplus.be.server.reservation.interfaces.web.dto.response.reservation.ReservationTokenStatusResponse;
@@ -46,7 +46,7 @@ public class CheckQueueStatusUseCaseTest {
         ReservationTokenStatusResponse response = checkQueueStatusUseCase.checkStatus(validToken);
 
         // then
-        assertThat(response.status()).isEqualTo(TokenStatus.ACTIVE.name());
+        assertThat(response.status()).isEqualTo(ReservationTokenStatus.ACTIVE.name());
         assertThat(response.rank()).isZero();
     }
 
@@ -63,7 +63,7 @@ public class CheckQueueStatusUseCaseTest {
         ReservationTokenStatusResponse response = checkQueueStatusUseCase.checkStatus(validToken);
 
         // then
-        assertThat(response.status()).isEqualTo(TokenStatus.WAITING.name());
+        assertThat(response.status()).isEqualTo(ReservationTokenStatus.WAITING.name());
         assertThat(response.rank()).isEqualTo(rank + 1); // 실제 사용자에게 보여지는 대기 번호
     }
 

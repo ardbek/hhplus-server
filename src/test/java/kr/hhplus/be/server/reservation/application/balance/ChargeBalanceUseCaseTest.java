@@ -8,8 +8,8 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.never;
 
 import java.util.Optional;
-import kr.hhplus.be.server.queue.exception.balance.InvalidChargeAmountException;
-import kr.hhplus.be.server.queue.exception.balance.WalletNotFoundException;
+import kr.hhplus.be.server.reservation.exception.balance.InvalidChargeAmountException;
+import kr.hhplus.be.server.reservation.exception.balance.WalletNotFoundException;
 import kr.hhplus.be.server.reservation.domain.model.Balance;
 import kr.hhplus.be.server.reservation.domain.repository.BalanceRepository;
 import org.junit.jupiter.api.DisplayName;

@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-public class ReserveTemporarySeatEntityUseCaseTest {
+public class  ReserveTemporarySeatEntityUseCaseTest {
 
     @Mock
     ReservationRepository reservationRepository;

@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.queue.exception.balance;
+package kr.hhplus.be.server.reservation.exception.balance;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

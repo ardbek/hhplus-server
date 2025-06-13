@@ -8,7 +8,7 @@ import kr.hhplus.be.server.reservation.application.reservation.GetAvailableSeats
 import kr.hhplus.be.server.reservation.application.reservation.ReserveTemporarySeatUseCase;
 import kr.hhplus.be.server.reservation.domain.model.Reservation;
 import kr.hhplus.be.server.reservation.infrastructure.persistence.seat.SeatEntity;
-import kr.hhplus.be.server.reservation.interfaces.web.dto.request.reservation.ReservationRequest;
+import kr.hhplus.be.server.reservation.interfaces.web.dto.request.reservation.ReserveRequest;
 import kr.hhplus.be.server.reservation.interfaces.web.dto.request.reservation.ReserveConfirmRequest;
 import kr.hhplus.be.server.reservation.interfaces.web.dto.response.reservation.AvailableDatesResponse;
 import kr.hhplus.be.server.reservation.interfaces.web.dto.response.reservation.AvailableSeatsResponse;
@@ -61,7 +61,7 @@ public class ReservationController {
      * @return
      */
     @PostMapping("/reserve-temporary")
-    public Reservation reserveTemporary(@RequestBody ReservationRequest request) {
+    public Reservation reserveTemporary(@RequestBody ReserveRequest request) {
         return reserveTemporarySeatUseCase.reserveTemporary(request.userId(), request.concertScheduleId(), request.seatId());
     }
 

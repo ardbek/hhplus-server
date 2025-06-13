@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import kr.hhplus.be.server.balanceHistory.domain.BalanceHistory;
 import kr.hhplus.be.server.balanceHistory.domain.BalanceHistoryType;
 import kr.hhplus.be.server.balanceHistory.repository.BalanceHistoryRepository;
-import kr.hhplus.be.server.queue.domain.TokenStatus;
+import kr.hhplus.be.server.reservation.domain.ReservationTokenStatus;
 import kr.hhplus.be.server.queue.repository.QueueTokenRepository;
 import kr.hhplus.be.server.reservation.domain.model.Balance;
 import kr.hhplus.be.server.reservation.domain.model.Payment;
@@ -91,7 +91,7 @@ public class ConfirmPaymentUseCase {
     }
 
     private void expireQueueToken(Long userId) {
-        queueTokenRepository.expireTokenByUserId(userId, TokenStatus.EXPIRED, LocalDateTime.now(), TokenStatus.ACTIVE);
+        queueTokenRepository.expireTokenByUserId(userId, ReservationTokenStatus.EXPIRED, LocalDateTime.now(), ReservationTokenStatus.ACTIVE);
     }
 
 }

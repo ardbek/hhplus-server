@@ -1,7 +1,7 @@
 package kr.hhplus.be.server.reservation.domain.model;
 
 import java.time.LocalDateTime;
-import kr.hhplus.be.server.queue.exception.balance.InvalidChargeAmountException;
+import kr.hhplus.be.server.reservation.exception.balance.InvalidChargeAmountException;
 import kr.hhplus.be.server.reservation.exception.balance.InsufficientBalanceException;
 
 public class Balance {

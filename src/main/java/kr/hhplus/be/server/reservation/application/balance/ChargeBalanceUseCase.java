@@ -1,6 +1,6 @@
 package kr.hhplus.be.server.reservation.application.balance;
 
-import kr.hhplus.be.server.queue.exception.balance.WalletNotFoundException;
+import kr.hhplus.be.server.reservation.exception.balance.WalletNotFoundException;
 import kr.hhplus.be.server.reservation.domain.model.Balance;
 import kr.hhplus.be.server.reservation.domain.repository.BalanceRepository;
 import org.springframework.transaction.annotation.Transactional;

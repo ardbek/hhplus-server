@@ -22,7 +22,7 @@ import kr.hhplus.be.server.reservation.domain.repository.ReservationRepository;
 import kr.hhplus.be.server.reservation.domain.repository.SeatRepository;
 import kr.hhplus.be.server.reservation.interfaces.web.dto.request.reservation.ReservationTokenIssueRequest;
 import kr.hhplus.be.server.reservation.interfaces.web.dto.request.reservation.ReservationConfirmRequest;
-import kr.hhplus.be.server.reservation.interfaces.web.dto.request.reservation.ReservationRequest;
+import kr.hhplus.be.server.reservation.interfaces.web.dto.request.reservation.ReserveRequest;
 import kr.hhplus.be.server.user.domain.User;
 import kr.hhplus.be.server.user.repository.UserRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -98,7 +98,7 @@ class ReservationScenarioTest {
         MvcResult reserveResult = mockMvc.perform(post("/api/reservation/reserve-temporary")
                         .header("X-Queue-Token", token)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(new ReservationRequest(testUser.getId(), testSeat.getId(), testSeat.getConcertScheduleId()))))
+                        .content(objectMapper.writeValueAsString(new ReserveRequest(testUser.getId(), testSeat.getId(), testSeat.getConcertScheduleId()))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("LOCKED"))
                 .andDo(print())

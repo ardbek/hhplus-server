@@ -3,10 +3,10 @@ package kr.hhplus.be.server.queue.service.impl;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import kr.hhplus.be.server.queue.domain.QueueToken;
-import kr.hhplus.be.server.queue.domain.TokenStatus;
+import kr.hhplus.be.server.reservation.domain.ReservationTokenStatus;
 import kr.hhplus.be.server.queue.dto.response.QueueStatusResponse;
-import kr.hhplus.be.server.queue.exception.AlreadyInQueueException;
-import kr.hhplus.be.server.queue.exception.TokenNotFoundException;
+import kr.hhplus.be.server.reservation.exception.reservationToken.AlreadyInQueueException;
+import kr.hhplus.be.server.reservation.exception.reservationToken.TokenNotFoundException;
 import kr.hhplus.be.server.queue.repository.QueueTokenRepository;
 import kr.hhplus.be.server.queue.service.QueueTokenService;
 import kr.hhplus.be.server.user.domain.User;
@@ -28,14 +28,14 @@ public class QueueTokenServiceImpl implements QueueTokenService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException());
 
-        if(queueTokenRepository.existsByUserAndStatus(user, TokenStatus.WAITING)) {
+        if(queueTokenRepository.existsByUserAndStatus(user, ReservationTokenStatus.WAITING)) {
             throw new AlreadyInQueueException();
         }
 
         QueueToken token = QueueToken.builder()
             .user(user)
             .token(UUID.randomUUID().toString())
-            .status(TokenStatus.WAITING)
+            .status(ReservationTokenStatus.WAITING)
             .issuedAt(LocalDateTime.now())
             .expiresAt(LocalDateTime.now().plusMinutes(10))
             .build();
@@ -54,7 +54,7 @@ public class QueueTokenServiceImpl implements QueueTokenService {
         int position = getPosition(queueToken);
 
         if (position >= 1 && position <= batchSize
-                && queueToken.getStatus() == TokenStatus.WAITING) {
+                && queueToken.getStatus() == ReservationTokenStatus.WAITING) {
             queueToken.active();
             queueTokenRepository.save(queueToken);
         }
@@ -64,7 +64,7 @@ public class QueueTokenServiceImpl implements QueueTokenService {
 
     private int getPosition(QueueToken token) {
         return queueTokenRepository.countByStatusAndCreatedAtBefore(
-                TokenStatus.WAITING, token.getIssuedAt()
+                ReservationTokenStatus.WAITING, token.getIssuedAt()
         ) + 1;
     }
 }
