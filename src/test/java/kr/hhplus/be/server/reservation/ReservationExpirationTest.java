@@ -10,8 +10,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Objects;
-import kr.hhplus.be.server.concert.domain.Concert;
-import kr.hhplus.be.server.concert.repository.ConcertRepository;
 import kr.hhplus.be.server.reservation.domain.ReservationStatus;
 import kr.hhplus.be.server.reservation.domain.model.ConcertSchedule;
 import kr.hhplus.be.server.reservation.domain.model.Reservation;
@@ -19,6 +17,8 @@ import kr.hhplus.be.server.reservation.domain.model.Seat;
 import kr.hhplus.be.server.reservation.domain.repository.ConcertScheduleRepository;
 import kr.hhplus.be.server.reservation.domain.repository.ReservationRepository;
 import kr.hhplus.be.server.reservation.domain.repository.SeatRepository;
+import kr.hhplus.be.server.reservation.infrastructure.persistence.concert.ConcertEntity;
+import kr.hhplus.be.server.reservation.infrastructure.persistence.concert.ConcertJpaRepository;
 import kr.hhplus.be.server.reservation.interfaces.web.dto.request.reservation.ReserveRequest;
 import kr.hhplus.be.server.user.domain.User;
 import kr.hhplus.be.server.user.repository.UserRepository;
@@ -50,7 +50,7 @@ class ReservationExpirationTest {
     @Autowired private MockMvc mockMvc;
     @Autowired private ObjectMapper objectMapper;
     @Autowired private UserRepository userRepository;
-    @Autowired private ConcertRepository concertRepository;
+    @Autowired private ConcertJpaRepository concertJpaRepository;
     @Autowired private ConcertScheduleRepository concertScheduleRepository;
     @Autowired private SeatRepository seatRepository;
     @Autowired private ReservationRepository reservationRepository;
@@ -62,9 +62,22 @@ class ReservationExpirationTest {
     @BeforeEach
     void setUp() {
         userA = userRepository.save(User.builder().build());
-        Concert concert = concertRepository.save(Concert.builder().title("테스트 콘서트").build());
-        ConcertSchedule schedule = concertScheduleRepository.save(ConcertSchedule.builder().concertId(concert.getId()).startAt(LocalDateTime.now().plusDays(10)).build());
-        testSeat = seatRepository.save(Seat.builder().concertScheduleId(schedule.getId()).seatNo(15).price(55000L).status(Seat.SeatStatus.AVAILABLE).build());
+        
+        ConcertEntity concert = concertJpaRepository.save(ConcertEntity.builder()
+                .title("테스트 콘서트")
+                .build());
+
+        ConcertSchedule schedule = concertScheduleRepository.save(ConcertSchedule.builder()
+                .concertId(concert.getId())
+                .startAt(LocalDateTime.now().plusDays(10))
+                .build());
+
+        testSeat = seatRepository.save(Seat.builder()
+                .concertScheduleId(schedule.getId())
+                .seatNo(15)
+                .price(55000L)
+                .status(Seat.SeatStatus.AVAILABLE)
+                .build());
     }
 
     @AfterEach

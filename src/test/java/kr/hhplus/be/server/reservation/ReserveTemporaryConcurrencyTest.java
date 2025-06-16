@@ -10,11 +10,13 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import kr.hhplus.be.server.concert.domain.Concert;
-import kr.hhplus.be.server.concert.repository.ConcertRepository;
 import kr.hhplus.be.server.reservation.application.reservation.ReserveTemporarySeatUseCase;
 import kr.hhplus.be.server.reservation.domain.repository.ReservationRepository;
 import kr.hhplus.be.server.reservation.exception.seat.SeatAlreadyReservedException;
+import kr.hhplus.be.server.reservation.infrastructure.persistence.concert.ConcertEntity;
+import kr.hhplus.be.server.reservation.infrastructure.persistence.concert.ConcertJpaRepository;
+import kr.hhplus.be.server.reservation.infrastructure.persistence.concertSchedule.ConcertScheduleEntity;
+import kr.hhplus.be.server.reservation.infrastructure.persistence.concertSchedule.ConcertScheduleJpaRepository;
 import kr.hhplus.be.server.reservation.infrastructure.persistence.seat.SeatEntity;
 import kr.hhplus.be.server.reservation.infrastructure.persistence.seat.SeatJpaRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -22,8 +24,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import kr.hhplus.be.server.reservation.infrastructure.persistence.concertSchedule.ConcertScheduleEntity;
-import kr.hhplus.be.server.reservation.infrastructure.persistence.concertSchedule.ConcertScheduleJpaRepository;
 
 @SpringBootTest
 public class ReserveTemporaryConcurrencyTest {
@@ -32,7 +32,7 @@ public class ReserveTemporaryConcurrencyTest {
     @Autowired private ReservationRepository reservationRepository;
     @Autowired private SeatJpaRepository seatJpaRepository;
     @Autowired private ConcertScheduleJpaRepository concertScheduleJpaRepository;
-    @Autowired private ConcertRepository concertRepository;
+    @Autowired private ConcertJpaRepository concertJpaRepository;
 
     private Long testConcertId;
     private Long testScheduleId;
@@ -40,23 +40,22 @@ public class ReserveTemporaryConcurrencyTest {
 
     @BeforeEach
     void setUp() {
-        Concert concert = Concert.builder().id(1L).title("테스트 콘서트").build();
-        concertRepository.save(concert);
+        ConcertEntity concert = concertJpaRepository.save(ConcertEntity.builder()
+                .title("테스트 콘서트")
+                .build());
         testConcertId = concert.getId();
 
-        ConcertScheduleEntity schedule = ConcertScheduleEntity.builder()
-            .concert(concert)
-            .startAt(LocalDateTime.now().plusDays(1))
-            .build();
-        concertScheduleJpaRepository.save(schedule);
+        ConcertScheduleEntity schedule = concertScheduleJpaRepository.save(ConcertScheduleEntity.builder()
+                .concert(concert)
+                .startAt(LocalDateTime.now().plusDays(1))
+                .build());
         testScheduleId = schedule.getId();
 
-        SeatEntity seatEntity = SeatEntity.builder()
-            .seatNo(1)
-            .concertScheduleEntity(schedule)
-            .price(50_000L)
-            .build();
-        seatJpaRepository.save(seatEntity);
+        SeatEntity seatEntity = seatJpaRepository.save(SeatEntity.builder()
+                .seatNo(1)
+                .concertScheduleEntity(schedule)
+                .price(50_000L)
+                .build());
         testSeatId = seatEntity.getId();
     }
 
@@ -64,7 +63,7 @@ public class ReserveTemporaryConcurrencyTest {
     void tearDown() {
         seatJpaRepository.deleteAll();
         concertScheduleJpaRepository.deleteAll();
-        concertRepository.deleteAll();
+        concertJpaRepository.deleteAll();
     }
 
     @Test
