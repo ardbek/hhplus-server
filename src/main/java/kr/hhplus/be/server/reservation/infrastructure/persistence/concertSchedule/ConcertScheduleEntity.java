@@ -9,7 +9,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
 import kr.hhplus.be.server.common.persistence.BaseTimeEntity;
-import kr.hhplus.be.server.concert.domain.Concert;
+import kr.hhplus.be.server.reservation.infrastructure.persistence.concert.ConcertEntity;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,7 +29,7 @@ public class ConcertScheduleEntity extends BaseTimeEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="concert_id", nullable=false)
-    private Concert concert;
+    private ConcertEntity concert;
 
     private LocalDateTime startAt;
 

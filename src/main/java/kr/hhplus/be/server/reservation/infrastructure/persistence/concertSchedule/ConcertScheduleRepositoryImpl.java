@@ -3,9 +3,9 @@ package kr.hhplus.be.server.reservation.infrastructure.persistence.concertSchedu
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import kr.hhplus.be.server.concert.repository.ConcertRepository;
 import kr.hhplus.be.server.reservation.domain.model.ConcertSchedule;
 import kr.hhplus.be.server.reservation.domain.repository.ConcertScheduleRepository;
+import kr.hhplus.be.server.reservation.infrastructure.persistence.concert.ConcertJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
 public class ConcertScheduleRepositoryImpl implements ConcertScheduleRepository {
 
     private final ConcertScheduleJpaRepository concertScheduleJpaRepository;
-    private final ConcertRepository concertRepository;
+    private final ConcertJpaRepository concertJpaRepository;
 
     @Override
     public ConcertSchedule save(ConcertSchedule concertSchedule) {
@@ -39,7 +39,7 @@ public class ConcertScheduleRepositoryImpl implements ConcertScheduleRepository 
         return ConcertScheduleEntity.builder()
                 .id(domain.getId())
                 .startAt(domain.getStartAt())
-                .concert(concertRepository.getReferenceById(domain.getConcertId()))
+                .concert(concertJpaRepository.getReferenceById(domain.getConcertId()))
                 .build();
     }
 

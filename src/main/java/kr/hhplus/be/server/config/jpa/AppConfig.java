@@ -15,6 +15,7 @@ import kr.hhplus.be.server.reservation.domain.repository.BalanceRepository;
 import kr.hhplus.be.server.reservation.domain.repository.PaymentRepository;
 import kr.hhplus.be.server.reservation.domain.repository.ReservationRepository;
 import kr.hhplus.be.server.reservation.domain.repository.ReservationTokenRepository;
+import kr.hhplus.be.server.reservation.domain.repository.SeatRepository;
 import kr.hhplus.be.server.reservation.infrastructure.persistence.concertSchedule.ConcertScheduleJpaRepository;
 import kr.hhplus.be.server.reservation.infrastructure.persistence.reservation.ReservationJpaRepository;
 import kr.hhplus.be.server.reservation.infrastructure.persistence.seat.SeatJpaRepository;
@@ -27,8 +28,8 @@ public class AppConfig {
 
     @Bean
     public ReserveTemporarySeatUseCase reserveSeatUseCase(
-            ReservationRepository reservationRepository, SeatJpaRepository seatJpaRepository) {
-        return new ReserveTemporarySeatUseCase(reservationRepository, seatJpaRepository);
+            ReservationRepository reservationRepository, SeatRepository seatRepository) {
+        return new ReserveTemporarySeatUseCase(reservationRepository, seatRepository);
     }
 
     @Bean
