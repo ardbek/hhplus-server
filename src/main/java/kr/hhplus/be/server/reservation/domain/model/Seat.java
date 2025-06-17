@@ -41,6 +41,13 @@ public class Seat {
         }
     }
 
+    /**
+     * 좌석이 이미 예약되었는지 확인
+     */
+    public boolean isReserved() {
+        return this.status == SeatStatus.RESERVED;
+    }
+
     public Long getId() {
         return id;
     }
