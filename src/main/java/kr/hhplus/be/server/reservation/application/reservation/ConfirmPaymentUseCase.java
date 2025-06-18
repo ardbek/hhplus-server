@@ -53,7 +53,7 @@ public class ConfirmPaymentUseCase {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(ReservationNotFoundException::new);
         SeatEntity seatEntity = seatJpaRepository.findById(reservation.getSeatId()).orElseThrow(SeatNotFoundException::new);
-        Balance balanceEntity = balanceRepository.findByUserId(userId).orElseThrow(BalanceNotFoundException::new);
+        Balance balanceEntity = balanceRepository.findByUserIdForUpdate(userId).orElseThrow(BalanceNotFoundException::new);
 
         // 2. 예약 확정, 결제 처리
         reservation.confirm(user.getId());
