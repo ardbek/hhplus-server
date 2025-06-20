@@ -25,7 +25,7 @@ public class ReservationEntity {
     Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "use_id")
+    @JoinColumn(name = "user_id")
     User user;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -26,7 +26,7 @@ public class BalanceRepositoryImpl implements BalanceRepository {
 
     @Override
     public Optional<Balance> findByUserIdForUpdate(Long userId) {
-        return jpaRepository.findByIdForUpdate(userId) // JpaRepository에 이 메소드가 정의되어 있다고 가정
+        return jpaRepository.findByUserIdForUpdate(userId)
                 .map(this::toDomain);
     }
 
