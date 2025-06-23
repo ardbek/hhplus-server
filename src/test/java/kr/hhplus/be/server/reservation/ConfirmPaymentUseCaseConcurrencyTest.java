@@ -16,6 +16,7 @@ import kr.hhplus.be.server.reservation.infrastructure.persistence.concertSchedul
 import kr.hhplus.be.server.reservation.infrastructure.persistence.concertSchedule.ConcertScheduleJpaRepository;
 import kr.hhplus.be.server.user.domain.User;
 import kr.hhplus.be.server.user.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -37,6 +38,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Slf4j
 @SpringBootTest
 @Testcontainers
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
@@ -126,9 +128,10 @@ public class ConfirmPaymentUseCaseConcurrencyTest {
                     confirmPaymentUseCase.confirmReservation(testUser.getId(), reservationId);
                     successCount.incrementAndGet();
                 } catch (InsufficientBalanceException e) {
+                    log.error("ConfirmPaymentUseCaseConcurrencyTest.concurrent_payment_test :: 잔액 부족으로 인한 예외 발생");
                     failCount.incrementAndGet();
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    log.error(e.getMessage());
                 } finally {
                     latch.countDown();
                 }
