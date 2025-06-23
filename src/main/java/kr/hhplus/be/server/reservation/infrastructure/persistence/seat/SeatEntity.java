@@ -36,6 +36,9 @@ public class SeatEntity extends BaseTimeEntity {
 
     private Long price;
 
+    // AVAILABLE 예약 가능
+    // RESERVED 임시 예약됨 (결제 대기),
+    // PAID 결제 완료
     private SeatStatus status;
 
 }

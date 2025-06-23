@@ -3,6 +3,7 @@ package kr.hhplus.be.server.config.jpa;
 import kr.hhplus.be.server.balanceHistory.repository.BalanceHistoryRepository;
 import kr.hhplus.be.server.queue.repository.QueueTokenRepository;
 import kr.hhplus.be.server.reservation.application.balance.ChargeBalanceUseCase;
+import kr.hhplus.be.server.reservation.application.reservation.ExpireReservationUseCase;
 import kr.hhplus.be.server.reservation.application.reservation.GetAvailableDatesUseCase;
 import kr.hhplus.be.server.reservation.application.reservation.GetAvailableSeatsUseCase;
 import kr.hhplus.be.server.reservation.application.reservationToken.CheckQueueStatusUseCase;
@@ -73,6 +74,13 @@ public class AppConfig {
     public GetAvailableSeatsUseCase getAvailableSeatsUseCase(
         ReservationRepository reservationRepository, SeatJpaRepository seatJpaRepository) {
         return new GetAvailableSeatsUseCase(reservationRepository, seatJpaRepository);
+    }
+
+    @Bean
+    public ExpireReservationUseCase expireReservationUseCase(
+            ReservationRepository reservationRepository, SeatRepository seatRepository
+    ) {
+        return new ExpireReservationUseCase(reservationRepository, seatRepository);
     }
 
 

@@ -17,4 +17,6 @@ public interface ReservationRepository {
     List<Long> findByReservedSeatIds(Long scheduleId, List<ReservationStatus> statuses);
 
     List<Reservation> findReservationsToExpire(ReservationStatus status, LocalDateTime now);
+
+    void updateStatusToCanceledByIds(List<Long> reservationIds, ReservationStatus status);
 }

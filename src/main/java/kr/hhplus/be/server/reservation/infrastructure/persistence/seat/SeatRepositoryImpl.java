@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import kr.hhplus.be.server.reservation.domain.model.Seat;
+import kr.hhplus.be.server.reservation.domain.model.Seat.SeatStatus;
 import kr.hhplus.be.server.reservation.domain.repository.SeatRepository;
 import kr.hhplus.be.server.reservation.infrastructure.persistence.concertSchedule.ConcertScheduleJpaRepository;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +39,11 @@ public class SeatRepositoryImpl implements SeatRepository {
         return seatJpaRepository.findByConcertScheduleEntity_Id(scheduleId).stream()
                 .map(this::toDomain)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public void updateStatusToCanceledByIds(List<Long> seatIds, SeatStatus status) {
+        seatJpaRepository.updateStatusByIds(seatIds, status);
     }
 
     // 도메인 모델 -> 영속성 엔티티 변환

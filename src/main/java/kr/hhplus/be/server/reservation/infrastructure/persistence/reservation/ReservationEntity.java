@@ -14,10 +14,17 @@ import kr.hhplus.be.server.reservation.domain.ReservationStatus;
 import kr.hhplus.be.server.reservation.infrastructure.persistence.concertSchedule.ConcertScheduleEntity;
 import kr.hhplus.be.server.reservation.infrastructure.persistence.seat.SeatEntity;
 import kr.hhplus.be.server.user.domain.User;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ReservationEntity {
 
     @Id
@@ -42,8 +49,5 @@ public class ReservationEntity {
     LocalDateTime createdAt;
 
     LocalDateTime updatedAt;
-
-    protected ReservationEntity() {}
-
 
 }

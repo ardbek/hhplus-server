@@ -59,6 +59,11 @@ public class ReservationRepositoryImpl implements ReservationRepository {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public void updateStatusToCanceledByIds(List<Long> reservationIds, ReservationStatus status) {
+        jpa.updateStatusToCanceledByIds(reservationIds, status);
+    }
+
     private ReservationEntity toEntity(Reservation r) {
         ReservationEntity e = new ReservationEntity();
         e.id = r.getId();

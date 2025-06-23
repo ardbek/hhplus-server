@@ -3,6 +3,7 @@ package kr.hhplus.be.server.reservation.domain.repository;
 import java.util.List;
 import java.util.Optional;
 import kr.hhplus.be.server.reservation.domain.model.Seat;
+import kr.hhplus.be.server.reservation.domain.model.Seat.SeatStatus;
 
 public interface SeatRepository {
 
@@ -13,4 +14,6 @@ public interface SeatRepository {
     Optional<Seat> findByIdForUpdate(Long seatId);
 
     List<Seat> findByConcertScheduleId(Long scheduleId);
+
+    void updateStatusToCanceledByIds(List<Long> seatIds, SeatStatus status);
 }

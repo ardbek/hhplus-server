@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import kr.hhplus.be.server.reservation.domain.ReservationStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -24,8 +25,12 @@ public interface ReservationJpaRepository extends JpaRepository<ReservationEntit
     @Query("SELECT r.seatEntity.id FROM ReservationEntity r WHERE r.concertScheduleEntity.id = :scheduleId AND r.status IN :statuses")
     List<Long> findByReservedSeatIds(Long scheduleId, List<ReservationStatus> statuses);
 
-    // 만료된 모든 예약 조회
+    /* 만료된 모든 예약 조회 */
     @Query("SELECT r FROM ReservationEntity r WHERE r.status = :status AND r.createdAt < :now")
     List<ReservationEntity> findReservationsToExpire(@Param("status") ReservationStatus status, @Param("now") LocalDateTime now);
+
+    @Modifying(clearAutomatically = true)
+    @Query("UPDATE ReservationEntity r SET r.status = :status WHERE r.id IN :reservationIds AND r.status = 'LOCKED'")
+    void updateStatusToCanceledByIds(@Param("reservationIds") List<Long> reservationIds, @Param("status") ReservationStatus status);
 
 }
