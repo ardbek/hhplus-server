@@ -4,14 +4,13 @@ import java.time.LocalDateTime;
 import kr.hhplus.be.server.balanceHistory.domain.BalanceHistory;
 import kr.hhplus.be.server.balanceHistory.domain.BalanceHistoryType;
 import kr.hhplus.be.server.balanceHistory.repository.BalanceHistoryRepository;
-import kr.hhplus.be.server.reservation.domain.ReservationTokenStatus;
-import kr.hhplus.be.server.queue.repository.QueueTokenRepository;
 import kr.hhplus.be.server.reservation.domain.model.Balance;
 import kr.hhplus.be.server.reservation.domain.model.Payment;
 import kr.hhplus.be.server.reservation.domain.model.Reservation;
 import kr.hhplus.be.server.reservation.domain.repository.BalanceRepository;
 import kr.hhplus.be.server.reservation.domain.repository.PaymentRepository;
 import kr.hhplus.be.server.reservation.domain.repository.ReservationRepository;
+import kr.hhplus.be.server.reservation.domain.repository.ReservationTokenRepository;
 import kr.hhplus.be.server.reservation.exception.balance.BalanceNotFoundException;
 import kr.hhplus.be.server.reservation.exception.reservation.ReservationNotFoundException;
 import kr.hhplus.be.server.reservation.exception.seat.SeatNotFoundException;
@@ -26,23 +25,24 @@ import org.springframework.transaction.annotation.Transactional;
 public class ConfirmPaymentUseCase {
 
     private final ReservationRepository reservationRepository;
+    private final ReservationTokenRepository reservationTokenRepository;
     private final PaymentRepository paymentRepository;
     private final BalanceRepository balanceRepository;
     private final SeatJpaRepository seatJpaRepository;
     private final BalanceHistoryRepository balanceHistoryRepository;
-    private final QueueTokenRepository queueTokenRepository;
     private final UserRepository userRepository;
 
     public ConfirmPaymentUseCase(ReservationRepository reservationRepository,
+            ReservationTokenRepository reservationTokenRepository,
             PaymentRepository paymentRepository, BalanceRepository balanceRepository,
             SeatJpaRepository seatJpaRepository, BalanceHistoryRepository balanceHistoryRepository,
-            QueueTokenRepository queueTokenRepository, UserRepository userRepository) {
+            UserRepository userRepository) {
         this.reservationRepository = reservationRepository;
+        this.reservationTokenRepository = reservationTokenRepository;
         this.paymentRepository = paymentRepository;
         this.balanceRepository = balanceRepository;
         this.seatJpaRepository = seatJpaRepository;
         this.balanceHistoryRepository = balanceHistoryRepository;
-        this.queueTokenRepository = queueTokenRepository;
         this.userRepository = userRepository;
     }
 
@@ -91,7 +91,7 @@ public class ConfirmPaymentUseCase {
     }
 
     private void expireQueueToken(Long userId) {
-        queueTokenRepository.expireTokenByUserId(userId, ReservationTokenStatus.EXPIRED, LocalDateTime.now(), ReservationTokenStatus.ACTIVE);
+        reservationTokenRepository.removeFromWaiting(userId);
     }
 
 }

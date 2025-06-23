@@ -1,8 +1,8 @@
 package kr.hhplus.be.server.reservation.application.reservation;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
@@ -11,13 +11,13 @@ import java.util.Optional;
 import kr.hhplus.be.server.balanceHistory.domain.BalanceHistory;
 import kr.hhplus.be.server.balanceHistory.repository.BalanceHistoryRepository;
 import kr.hhplus.be.server.reservation.domain.ReservationTokenStatus;
-import kr.hhplus.be.server.queue.repository.QueueTokenRepository;
 import kr.hhplus.be.server.reservation.domain.ReservationStatus;
 import kr.hhplus.be.server.reservation.domain.model.Balance;
 import kr.hhplus.be.server.reservation.domain.model.Payment;
 import kr.hhplus.be.server.reservation.domain.model.Reservation;
 import kr.hhplus.be.server.reservation.domain.repository.PaymentRepository;
 import kr.hhplus.be.server.reservation.domain.repository.ReservationRepository;
+import kr.hhplus.be.server.reservation.domain.repository.ReservationTokenRepository;
 import kr.hhplus.be.server.reservation.exception.reservation.NotTemporaryReservationException;
 import kr.hhplus.be.server.reservation.exception.reservation.NotYourReservationException;
 import kr.hhplus.be.server.reservation.infrastructure.persistence.seat.SeatEntity;
@@ -39,7 +39,7 @@ public class ConfirmPaymentUseCaseTest {
     @Mock private BalanceRepository balanceRepository;
     @Mock private SeatJpaRepository seatJpaRepository;
     @Mock private BalanceHistoryRepository balanceHistoryRepository;
-    @Mock private QueueTokenRepository queueTokenRepository;
+    @Mock private ReservationTokenRepository reservationTokenRepository;
     @Mock private UserRepository userRepository;
 
     @InjectMocks
@@ -71,18 +71,17 @@ public class ConfirmPaymentUseCaseTest {
         Balance balance = Balance.builder().id(100L).userId(user.getId()).balance(10_000L).build();
 
         given(seatJpaRepository.findById(seatId)).willReturn(Optional.of(seatEntity));
-        given(balanceRepository.findByUserId(userId)).willReturn(Optional.of(balance));
+        given(balanceRepository.findByUserIdForUpdate(userId)).willReturn(Optional.of(balance));
         given(userRepository.findById(userId)).willReturn(Optional.of(user));
 
         // when
         confirmPaymentUseCase.confirmReservation(userId, reservationId);
 
         // then
+        assertThat(reservationTokenRepository.isActiveUser(userId)).isEqualTo(false);
         verify(balanceRepository).save(any(Balance.class));
         verify(paymentRepository).save(any(Payment.class));
         verify(balanceHistoryRepository).save(any(BalanceHistory.class));
-        verify(queueTokenRepository).expireTokenByUserId(eq(userId), eq(ReservationTokenStatus.EXPIRED), any(), eq(
-                ReservationTokenStatus.ACTIVE));
         verify(reservationRepository).save(any(Reservation.class));
     }
 
