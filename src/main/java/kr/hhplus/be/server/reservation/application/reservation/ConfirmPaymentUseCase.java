@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import kr.hhplus.be.server.balanceHistory.domain.BalanceHistory;
 import kr.hhplus.be.server.balanceHistory.domain.BalanceHistoryType;
 import kr.hhplus.be.server.balanceHistory.repository.BalanceHistoryRepository;
+import kr.hhplus.be.server.common.lock.DistributedLock;
 import kr.hhplus.be.server.reservation.domain.model.Balance;
 import kr.hhplus.be.server.reservation.domain.model.Payment;
 import kr.hhplus.be.server.reservation.domain.model.Reservation;
@@ -19,8 +20,6 @@ import kr.hhplus.be.server.reservation.infrastructure.persistence.seat.SeatJpaRe
 import kr.hhplus.be.server.user.domain.User;
 import kr.hhplus.be.server.user.exception.UserNotFoundException;
 import kr.hhplus.be.server.user.repository.UserRepository;
-import org.springframework.transaction.annotation.Transactional;
-
 
 public class ConfirmPaymentUseCase {
 
@@ -46,13 +45,13 @@ public class ConfirmPaymentUseCase {
         this.userRepository = userRepository;
     }
 
-    @Transactional
-    public void confirmReservation(Long userId, Long reservationId) {
+    @DistributedLock(key="'seat:'+#seatId")
+    public void confirmReservation(Long userId, Long reservationId,Long seatId) {
         // 1. 도메인 객체 조회
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(ReservationNotFoundException::new);
-        SeatEntity seatEntity = seatJpaRepository.findById(reservation.getSeatId()).orElseThrow(SeatNotFoundException::new);
+        SeatEntity seatEntity = seatJpaRepository.findById(seatId).orElseThrow(SeatNotFoundException::new);
         Balance balanceEntity = balanceRepository.findByUserIdForUpdate(userId).orElseThrow(BalanceNotFoundException::new);
 
         // 2. 예약 확정, 결제 처리

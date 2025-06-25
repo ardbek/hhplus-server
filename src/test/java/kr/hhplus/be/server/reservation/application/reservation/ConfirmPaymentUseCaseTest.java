@@ -75,7 +75,7 @@ public class ConfirmPaymentUseCaseTest {
         given(userRepository.findById(userId)).willReturn(Optional.of(user));
 
         // when
-        confirmPaymentUseCase.confirmReservation(userId, reservationId);
+        confirmPaymentUseCase.confirmReservation(userId, reservationId, seatId);
 
         // then
         assertThat(reservationTokenRepository.isActiveUser(userId)).isEqualTo(false);
