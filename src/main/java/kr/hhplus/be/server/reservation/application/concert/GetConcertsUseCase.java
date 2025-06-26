@@ -17,7 +17,7 @@ public class GetConcertsUseCase {
     private final ConcertJpaRepository concertJpaRepository;
 
     @Transactional(readOnly = true)
-    @Cacheable(value="concerts")
+    @Cacheable(value="concerts", sync = true)
     public List<Concert> getConcerts() {
         log.info("[Cache Miss] Fetching concerts from DB.. ");
         return concertJpaRepository.findAll().stream()

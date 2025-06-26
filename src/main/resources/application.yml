@@ -21,6 +21,14 @@ spring:
       hibernate.timezone.default_storage: NORMALIZE_UTC
       hibernate.jdbc.time_zone: UTC
 
+# cache ttl, maxIdleTime 설정
+custom:
+  cache:
+    configs:
+      concerts:
+        ttl: 600000 #10분
+        max-idle-time: 0 # 사용안함
+
 ---
 spring.config.activate.on-profile: local, test
 
