@@ -6,6 +6,7 @@ import kr.hhplus.be.server.reservation.domain.repository.ReservationRepository;
 import kr.hhplus.be.server.reservation.domain.repository.SeatRepository;
 import kr.hhplus.be.server.reservation.exception.seat.SeatAlreadyReservedException;
 import kr.hhplus.be.server.reservation.exception.seat.SeatNotFoundException;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.transaction.annotation.Transactional;
 
 public class ReserveTemporarySeatUseCase {
@@ -19,6 +20,7 @@ public class ReserveTemporarySeatUseCase {
     }
 
     @Transactional
+    @CacheEvict(value = "availableSeats", key = "#concertScheduleId")
     public Reservation reserveTemporary(Long userId, Long concertScheduleId, Long seatId) {
         // 1. 비관적 락으로 좌석 조회
         Seat seat = seatRepository.findByIdForUpdate(seatId)

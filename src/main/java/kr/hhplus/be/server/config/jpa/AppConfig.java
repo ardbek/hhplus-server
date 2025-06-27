@@ -3,6 +3,7 @@ package kr.hhplus.be.server.config.jpa;
 import kr.hhplus.be.server.balanceHistory.repository.BalanceHistoryRepository;
 import kr.hhplus.be.server.reservation.application.balance.ChargeBalanceUseCase;
 import kr.hhplus.be.server.reservation.application.balance.GetBalanceUseCase;
+import kr.hhplus.be.server.reservation.application.concert.GetConcertsUseCase;
 import kr.hhplus.be.server.reservation.application.reservation.ConfirmPaymentUseCase;
 import kr.hhplus.be.server.reservation.application.reservation.ExpireReservationUseCase;
 import kr.hhplus.be.server.reservation.application.reservation.GetAvailableDatesUseCase;
@@ -16,6 +17,7 @@ import kr.hhplus.be.server.reservation.domain.repository.PaymentRepository;
 import kr.hhplus.be.server.reservation.domain.repository.ReservationRepository;
 import kr.hhplus.be.server.reservation.domain.repository.ReservationTokenRepository;
 import kr.hhplus.be.server.reservation.domain.repository.SeatRepository;
+import kr.hhplus.be.server.reservation.infrastructure.persistence.concert.ConcertJpaRepository;
 import kr.hhplus.be.server.reservation.infrastructure.persistence.concertSchedule.ConcertScheduleJpaRepository;
 import kr.hhplus.be.server.reservation.infrastructure.persistence.seat.SeatJpaRepository;
 import kr.hhplus.be.server.user.repository.UserRepository;
@@ -60,6 +62,11 @@ public class AppConfig {
     @Bean
     public GetBalanceUseCase getBalanceUseCase(BalanceRepository balanceRepository) {
         return new GetBalanceUseCase(balanceRepository);
+    }
+
+    @Bean
+    public GetConcertsUseCase getConcertsUseCase(ConcertJpaRepository concertJpaRepository) {
+        return new GetConcertsUseCase(concertJpaRepository);
     }
 
     @Bean

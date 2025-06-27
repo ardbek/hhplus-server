@@ -2,19 +2,19 @@ package kr.hhplus.be.server.reservation.application.concert;
 
 import kr.hhplus.be.server.reservation.domain.model.Concert;
 import kr.hhplus.be.server.reservation.infrastructure.persistence.concert.ConcertJpaRepository;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Slf4j
-@Service
-@RequiredArgsConstructor
 public class GetConcertsUseCase {
     private final ConcertJpaRepository concertJpaRepository;
+
+    public GetConcertsUseCase(ConcertJpaRepository concertJpaRepository) {
+        this.concertJpaRepository = concertJpaRepository;
+    }
 
     @Transactional(readOnly = true)
     @Cacheable(value="concerts", sync = true)
