@@ -71,7 +71,7 @@ public class ReservationController {
      */
     @PostMapping("/reserve-confirm")
     public void confirmReservation(@RequestBody ReserveConfirmRequest request) {
-        confirmPaymentUseCase.confirmReservation(request.userId(), request.reservationId());
+        confirmPaymentUseCase.confirmReservation(request.userId(), request.reservationId(), request.seatId());
     }
 
 }

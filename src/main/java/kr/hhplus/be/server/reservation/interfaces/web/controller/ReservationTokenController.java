@@ -1,6 +1,6 @@
 package kr.hhplus.be.server.reservation.interfaces.web.controller;
 
-import kr.hhplus.be.server.queue.dto.request.QueueTokenIssueRequest;
+import kr.hhplus.be.server.reservation.interfaces.web.dto.request.reservationToken.QueueTokenIssueRequest;
 import kr.hhplus.be.server.reservation.application.reservationToken.CheckQueueStatusUseCase;
 import kr.hhplus.be.server.reservation.application.reservationToken.IssueReservationTokenUseCase;
 import kr.hhplus.be.server.reservation.interfaces.web.dto.response.reservation.ReservationTokenStatusResponse;
