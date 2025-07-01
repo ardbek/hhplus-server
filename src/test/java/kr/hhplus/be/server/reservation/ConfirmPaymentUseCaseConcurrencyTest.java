@@ -125,7 +125,8 @@ public class ConfirmPaymentUseCaseConcurrencyTest {
             executorService.submit(() -> {
                 try {
                     Long reservationId = reservations.get(index).getId();
-                    confirmPaymentUseCase.confirmReservation(testUser.getId(), reservationId);
+                    Long seatId = reservations.get(index).getSeatId();
+                    confirmPaymentUseCase.confirmReservation(testUser.getId(), reservationId, seatId);
                     successCount.incrementAndGet();
                 } catch (InsufficientBalanceException e) {
                     log.error("ConfirmPaymentUseCaseConcurrencyTest.concurrent_payment_test :: 잔액 부족으로 인한 예외 발생");

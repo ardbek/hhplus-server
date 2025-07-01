@@ -4,14 +4,14 @@ import java.time.LocalDateTime;
 import kr.hhplus.be.server.balanceHistory.domain.BalanceHistory;
 import kr.hhplus.be.server.balanceHistory.domain.BalanceHistoryType;
 import kr.hhplus.be.server.balanceHistory.repository.BalanceHistoryRepository;
-import kr.hhplus.be.server.reservation.domain.ReservationTokenStatus;
-import kr.hhplus.be.server.queue.repository.QueueTokenRepository;
+import kr.hhplus.be.server.common.lock.DistributedLock;
 import kr.hhplus.be.server.reservation.domain.model.Balance;
 import kr.hhplus.be.server.reservation.domain.model.Payment;
 import kr.hhplus.be.server.reservation.domain.model.Reservation;
 import kr.hhplus.be.server.reservation.domain.repository.BalanceRepository;
 import kr.hhplus.be.server.reservation.domain.repository.PaymentRepository;
 import kr.hhplus.be.server.reservation.domain.repository.ReservationRepository;
+import kr.hhplus.be.server.reservation.domain.repository.ReservationTokenRepository;
 import kr.hhplus.be.server.reservation.exception.balance.BalanceNotFoundException;
 import kr.hhplus.be.server.reservation.exception.reservation.ReservationNotFoundException;
 import kr.hhplus.be.server.reservation.exception.seat.SeatNotFoundException;
@@ -20,39 +20,38 @@ import kr.hhplus.be.server.reservation.infrastructure.persistence.seat.SeatJpaRe
 import kr.hhplus.be.server.user.domain.User;
 import kr.hhplus.be.server.user.exception.UserNotFoundException;
 import kr.hhplus.be.server.user.repository.UserRepository;
-import org.springframework.transaction.annotation.Transactional;
-
 
 public class ConfirmPaymentUseCase {
 
     private final ReservationRepository reservationRepository;
+    private final ReservationTokenRepository reservationTokenRepository;
     private final PaymentRepository paymentRepository;
     private final BalanceRepository balanceRepository;
     private final SeatJpaRepository seatJpaRepository;
     private final BalanceHistoryRepository balanceHistoryRepository;
-    private final QueueTokenRepository queueTokenRepository;
     private final UserRepository userRepository;
 
     public ConfirmPaymentUseCase(ReservationRepository reservationRepository,
+            ReservationTokenRepository reservationTokenRepository,
             PaymentRepository paymentRepository, BalanceRepository balanceRepository,
             SeatJpaRepository seatJpaRepository, BalanceHistoryRepository balanceHistoryRepository,
-            QueueTokenRepository queueTokenRepository, UserRepository userRepository) {
+            UserRepository userRepository) {
         this.reservationRepository = reservationRepository;
+        this.reservationTokenRepository = reservationTokenRepository;
         this.paymentRepository = paymentRepository;
         this.balanceRepository = balanceRepository;
         this.seatJpaRepository = seatJpaRepository;
         this.balanceHistoryRepository = balanceHistoryRepository;
-        this.queueTokenRepository = queueTokenRepository;
         this.userRepository = userRepository;
     }
 
-    @Transactional
-    public void confirmReservation(Long userId, Long reservationId) {
+    @DistributedLock(key="'seat:'+#seatId")
+    public void confirmReservation(Long userId, Long reservationId,Long seatId) {
         // 1. 도메인 객체 조회
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(ReservationNotFoundException::new);
-        SeatEntity seatEntity = seatJpaRepository.findById(reservation.getSeatId()).orElseThrow(SeatNotFoundException::new);
+        SeatEntity seatEntity = seatJpaRepository.findById(seatId).orElseThrow(SeatNotFoundException::new);
         Balance balanceEntity = balanceRepository.findByUserIdForUpdate(userId).orElseThrow(BalanceNotFoundException::new);
 
         // 2. 예약 확정, 결제 처리
@@ -91,7 +90,7 @@ public class ConfirmPaymentUseCase {
     }
 
     private void expireQueueToken(Long userId) {
-        queueTokenRepository.expireTokenByUserId(userId, ReservationTokenStatus.EXPIRED, LocalDateTime.now(), ReservationTokenStatus.ACTIVE);
+        reservationTokenRepository.removeFromWaiting(userId);
     }
 
 }

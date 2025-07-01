@@ -43,7 +43,7 @@ public class ChargeBalanceUseCaseTest {
                 .build();
 
         given(balanceRepository.findByUserIdForUpdate(userId)).willReturn(Optional.of(userBalance));
-        given(balanceRepository.save(userBalance)).willAnswer(invocation -> invocation.getArgument(0));
+        given(balanceRepository.save(any(Balance.class))).willAnswer(invocation -> invocation.getArgument(0));
 
         // when
         Balance result = chargeBalanceUseCase.charge(userId, chargeAmount);
