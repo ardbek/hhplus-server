@@ -33,4 +33,6 @@ public class ConcertScheduleEntity extends BaseTimeEntity {
 
     private LocalDateTime startAt;
 
+    private LocalDateTime ticketOpenTime;
+
 }

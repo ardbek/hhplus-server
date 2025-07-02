@@ -33,4 +33,5 @@ public interface ReservationJpaRepository extends JpaRepository<ReservationEntit
     @Query("UPDATE ReservationEntity r SET r.status = :status WHERE r.id IN :reservationIds AND r.status = 'LOCKED'")
     void updateStatusToCanceledByIds(@Param("reservationIds") List<Long> reservationIds, @Param("status") ReservationStatus status);
 
+    long countByConcertScheduleEntity_IdAndStatus(Long scheduleId, ReservationStatus reservationStatus);
 }
