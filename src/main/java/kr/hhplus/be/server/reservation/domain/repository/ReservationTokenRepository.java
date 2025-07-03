@@ -50,6 +50,8 @@ public interface ReservationTokenRepository {
      */
     void setActiveUser(Long userId);
 
+    void removeActiveUser(Long userId);
+
     /**
      * 유저가 활성 상태인지 확인
      * @param userId
@@ -57,4 +59,28 @@ public interface ReservationTokenRepository {
      */
     boolean isActiveUser(Long userId);
 
+    /**
+     * 처리 큐에 userId 추가
+     * @param userId
+     */
+    void addProcessingQueue(Long userId);
+
+    /**
+     * 큐에서 작업을 가져옴 (Consumer가 사용)
+     * 큐가 비어있을 경우, 지정 시간 동안 대기
+     * @return userID, 타임아웃 시 null
+     */
+    Long getFromProcessingQueue() throws InterruptedException;
+
+    /**
+     * 활성화된 유저 수 조회
+     * @return 활성화된 유저 수
+     */
+    Long getActiveUserCount();
+
+    /**
+     * 대기열 사용자 수 반환
+     * @return 대기열에 있는 총 사용자 수
+     */
+    Long getWaitingQueueSize();
 }

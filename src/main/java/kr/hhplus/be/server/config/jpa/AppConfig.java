@@ -13,7 +13,7 @@ import kr.hhplus.be.server.reservation.application.reservation.RecordSoldOutUseC
 import kr.hhplus.be.server.reservation.application.reservation.ReserveTemporarySeatUseCase;
 import kr.hhplus.be.server.reservation.application.reservationToken.CheckQueueStatusUseCase;
 import kr.hhplus.be.server.reservation.application.reservationToken.IssueReservationTokenUseCase;
-import kr.hhplus.be.server.reservation.application.reservationToken.QueueActivationScheduler;
+import kr.hhplus.be.server.reservation.application.reservationToken.QueuePromotionScheduler;
 import kr.hhplus.be.server.reservation.domain.repository.BalanceRepository;
 import kr.hhplus.be.server.reservation.domain.repository.ConcertScheduleRepository;
 import kr.hhplus.be.server.reservation.domain.repository.PaymentRepository;
@@ -51,12 +51,6 @@ public class AppConfig {
             ReservationTokenRepository tokenRepository
     ) {
         return new CheckQueueStatusUseCase(tokenRepository);
-    }
-
-    @Bean
-    public QueueActivationScheduler queueActivationScheduler(
-            ReservationTokenRepository tokenRepository) {
-        return new QueueActivationScheduler(tokenRepository);
     }
 
     @Bean
