@@ -7,11 +7,13 @@ public class ConcertSchedule {
     private final Long id;
     private final Long concertId;
     private final LocalDateTime startAt;
+    private final LocalDateTime ticketOpenTime;
 
     private ConcertSchedule(Builder builder) {
         this.id = builder.id;
         this.concertId = builder.concertId;
         this.startAt = builder.startAt;
+        this.ticketOpenTime = builder.ticketOpenTime;
     }
 
     public static Builder builder() {
@@ -30,10 +32,15 @@ public class ConcertSchedule {
         return startAt;
     }
 
+    public LocalDateTime getTicketOpenTime() {
+        return ticketOpenTime;
+    }
+
     public static class Builder {
         private Long id;
         private Long concertId;
         private LocalDateTime startAt;
+        private LocalDateTime ticketOpenTime;
 
         public Builder id(Long id) {
             this.id = id;
@@ -47,6 +54,11 @@ public class ConcertSchedule {
 
         public Builder startAt(LocalDateTime startAt) {
             this.startAt = startAt;
+            return this;
+        }
+
+        public Builder ticketOpenTime(LocalDateTime ticketOpenTime) {
+            this.ticketOpenTime = ticketOpenTime;
             return this;
         }
 
