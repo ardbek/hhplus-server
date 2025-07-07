@@ -19,4 +19,12 @@ public interface ReservationRepository {
     List<Reservation> findReservationsToExpire(ReservationStatus status, LocalDateTime now);
 
     void updateStatusToCanceledByIds(List<Long> reservationIds, ReservationStatus status);
+
+    /**
+     * 특정 콘서트 회차 ID와 예약 상태에 해당하는 예약 건수 조회
+     * @param scheduleId 콘서트 회차 Id
+     * @param reservationStatus 예약 상태
+     * @return 예약 건수
+     */
+    long countByConcertScheduleEntity_IdAndStatus(Long scheduleId, ReservationStatus reservationStatus);
 }

@@ -46,6 +46,11 @@ public class SeatRepositoryImpl implements SeatRepository {
         seatJpaRepository.updateStatusByIds(seatIds, status);
     }
 
+    @Override
+    public long countByConcertScheduleEntity_Id(Long scheduleId) {
+        return seatJpaRepository.countByConcertScheduleEntity_Id(scheduleId);
+    }
+
     // 도메인 모델 -> 영속성 엔티티 변환
     private SeatEntity toEntity(Seat seat) {
         return SeatEntity.builder()

@@ -40,6 +40,7 @@ public class ConcertScheduleRepositoryImpl implements ConcertScheduleRepository 
                 .id(domain.getId())
                 .startAt(domain.getStartAt())
                 .concert(concertJpaRepository.getReferenceById(domain.getConcertId()))
+                .ticketOpenTime(domain.getTicketOpenTime())
                 .build();
     }
 
@@ -48,6 +49,7 @@ public class ConcertScheduleRepositoryImpl implements ConcertScheduleRepository 
                 .id(entity.getId())
                 .startAt(entity.getStartAt())
                 .concertId(entity.getConcert().getId())
+                .ticketOpenTime(entity.getTicketOpenTime())
                 .build();
     }
 }

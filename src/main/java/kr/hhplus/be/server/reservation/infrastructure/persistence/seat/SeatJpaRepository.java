@@ -24,4 +24,6 @@ public interface SeatJpaRepository extends JpaRepository<SeatEntity, Long> {
     @Modifying(clearAutomatically = true)
     @Query("UPDATE SeatEntity s SET s.status = :status WHERE s.id IN :seatIds")
     void updateStatusByIds(@Param("seatIds") List<Long> seatIds, @Param("status") SeatStatus status);
+
+    long countByConcertScheduleEntity_Id(Long scheduleId);
 }

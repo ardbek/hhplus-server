@@ -64,6 +64,12 @@ public class ReservationRepositoryImpl implements ReservationRepository {
         jpa.updateStatusToCanceledByIds(reservationIds, status);
     }
 
+    @Override
+    public long countByConcertScheduleEntity_IdAndStatus(Long scheduleId,
+            ReservationStatus reservationStatus) {
+        return jpa.countByConcertScheduleEntity_IdAndStatus(scheduleId, reservationStatus);
+    }
+
     private ReservationEntity toEntity(Reservation r) {
         ReservationEntity e = new ReservationEntity();
         e.id = r.getId();
