@@ -3,11 +3,17 @@ package kr.hhplus.be.server.reservation;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.verify;
 
 import java.time.LocalDateTime;
 import java.util.Set;
+import kr.hhplus.be.server.balanceHistory.repository.BalanceHistoryRepository;
 import kr.hhplus.be.server.reservation.application.reservation.ConfirmPaymentUseCase;
+import kr.hhplus.be.server.reservation.application.reservation.port.out.DataPlatformApiClient;
 import kr.hhplus.be.server.reservation.domain.ReservationStatus;
+import kr.hhplus.be.server.reservation.domain.event.ReservationConfirmedEvent;
 import kr.hhplus.be.server.reservation.domain.model.Seat.SeatStatus;
 import kr.hhplus.be.server.reservation.infrastructure.persistence.balance.BalanceEntity;
 import kr.hhplus.be.server.reservation.infrastructure.persistence.balance.BalanceJpaRepository;
@@ -15,6 +21,7 @@ import kr.hhplus.be.server.reservation.infrastructure.persistence.concert.Concer
 import kr.hhplus.be.server.reservation.infrastructure.persistence.concert.ConcertJpaRepository;
 import kr.hhplus.be.server.reservation.infrastructure.persistence.concertSchedule.ConcertScheduleEntity;
 import kr.hhplus.be.server.reservation.infrastructure.persistence.concertSchedule.ConcertScheduleJpaRepository;
+import kr.hhplus.be.server.reservation.infrastructure.persistence.payment.PaymentJpaRepository;
 import kr.hhplus.be.server.reservation.infrastructure.persistence.reservation.ReservationEntity;
 import kr.hhplus.be.server.reservation.infrastructure.persistence.reservation.ReservationJpaRepository;
 import kr.hhplus.be.server.reservation.infrastructure.persistence.seat.SeatEntity;
@@ -30,6 +37,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations.TypedTuple;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.GenericContainer;
@@ -63,9 +71,13 @@ public class ConfirmPaymentIntegrationTest {
     @Autowired private ConcertScheduleJpaRepository concertScheduleJpaRepository;
     @Autowired private SeatJpaRepository seatJpaRepository;
     @Autowired private ReservationJpaRepository reservationJpaRepository;
+    @Autowired private PaymentJpaRepository paymentJpaRepository;
+    @Autowired private BalanceHistoryRepository balanceHistoryRepository;
+
+    @MockitoSpyBean
+    private DataPlatformApiClient dataPlatformApiClient;
 
     private final String RANKING_KEY = "concert:schedule:ranking";
-
 
     private User user1, user2;
     private ConcertScheduleEntity schedule;
@@ -83,6 +95,17 @@ public class ConfirmPaymentIntegrationTest {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     void setupDatabase() {
+
+        paymentJpaRepository.deleteAllInBatch();
+        balanceHistoryRepository.deleteAllInBatch();
+
+        reservationJpaRepository.deleteAllInBatch();
+        seatJpaRepository.deleteAllInBatch();
+        concertScheduleJpaRepository.deleteAllInBatch();
+        concertJpaRepository.deleteAllInBatch();
+        balanceJpaRepository.deleteAllInBatch();
+        userJpaRepository.deleteAllInBatch();
+
         user1 = userJpaRepository.save(User.builder().build());
         user2 = userJpaRepository.save(User.builder().build());
         balanceJpaRepository.save(BalanceEntity.builder().user(user1).balance(100_000L).build());
@@ -112,26 +135,23 @@ public class ConfirmPaymentIntegrationTest {
     }
 
     @Test
-    @DisplayName("마지막 좌석 결제 시, 매진 이벤트가 발생하여 Redis에 랭킹이 기록된다.")
-    void confirm_last_seat_and_record_ranking() {
-        // given setupDatabase() 에서 작업
-
+    @DisplayName("결제 확정 시, 데이터 전송 이벤트와 매진 이벤트가 모두 정상 처리된다.")
+    void confirm_payment_and_handle_all_events() {
         // when
-        // 테스트 사용자가 마지막 좌석 결제를 확정
         confirmPaymentUseCase.confirmReservation(user1.getId(), lastSeatReservation.getId(), seat2.getId());
 
         // then
-        // Redis에 랭킹 정보가 올바르게 기록되었는지 확인
-        Set<TypedTuple<String>> ranking = redisTemplate.opsForZSet().rangeWithScores(RANKING_KEY, 0, -1);
+        // 데이터 플랫폼 전송 이벤트 검증
+        verify(dataPlatformApiClient, timeout(2000).times(1)).sendReservationData(any(ReservationConfirmedEvent.class));
 
+        Set<TypedTuple<String>> ranking = redisTemplate.opsForZSet().rangeWithScores(RANKING_KEY, 0, -1);
         assertNotNull(ranking);
         assertEquals(1, ranking.size());
 
         TypedTuple<String> recordedRank = ranking.iterator().next();
         String expectedMember = "concert:" + concert.getId() + ":schedule:" + schedule.getId();
-
-        assertEquals(expectedMember, recordedRank.getValue(), "랭킹 멤버 이름이 예상과 일치해야 합니다.");
-        assertTrue(recordedRank.getScore() > 0, "매진까지 걸린 시간은 양수여야 합니다.");
+        assertEquals(expectedMember, recordedRank.getValue());
+        assertTrue(recordedRank.getScore() > 0);
     }
 
 }
