@@ -10,37 +10,41 @@ import java.util.Optional;
 
 import kr.hhplus.be.server.balanceHistory.domain.BalanceHistory;
 import kr.hhplus.be.server.balanceHistory.repository.BalanceHistoryRepository;
-import kr.hhplus.be.server.reservation.domain.ReservationTokenStatus;
 import kr.hhplus.be.server.reservation.domain.ReservationStatus;
+import kr.hhplus.be.server.reservation.domain.event.ReservationConfirmedEvent;
 import kr.hhplus.be.server.reservation.domain.model.Balance;
 import kr.hhplus.be.server.reservation.domain.model.Payment;
 import kr.hhplus.be.server.reservation.domain.model.Reservation;
+import kr.hhplus.be.server.reservation.domain.model.Seat;
 import kr.hhplus.be.server.reservation.domain.repository.PaymentRepository;
 import kr.hhplus.be.server.reservation.domain.repository.ReservationRepository;
 import kr.hhplus.be.server.reservation.domain.repository.ReservationTokenRepository;
+import kr.hhplus.be.server.reservation.domain.repository.SeatRepository;
 import kr.hhplus.be.server.reservation.exception.reservation.NotTemporaryReservationException;
 import kr.hhplus.be.server.reservation.exception.reservation.NotYourReservationException;
 import kr.hhplus.be.server.reservation.infrastructure.persistence.seat.SeatEntity;
-import kr.hhplus.be.server.reservation.infrastructure.persistence.seat.SeatJpaRepository;
 import kr.hhplus.be.server.user.domain.User;
 import kr.hhplus.be.server.user.repository.UserRepository;
 import kr.hhplus.be.server.reservation.domain.repository.BalanceRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.context.ApplicationEventPublisher;
 
 public class ConfirmPaymentUseCaseTest {
 
     @Mock private ReservationRepository reservationRepository;
     @Mock private PaymentRepository paymentRepository;
     @Mock private BalanceRepository balanceRepository;
-    @Mock private SeatJpaRepository seatJpaRepository;
+    @Mock private SeatRepository seatRepository;
     @Mock private BalanceHistoryRepository balanceHistoryRepository;
     @Mock private ReservationTokenRepository reservationTokenRepository;
     @Mock private UserRepository userRepository;
+    @Mock private ApplicationEventPublisher eventPublisher;
 
     @InjectMocks
     private ConfirmPaymentUseCase confirmPaymentUseCase;
@@ -63,14 +67,15 @@ public class ConfirmPaymentUseCaseTest {
         given(reservation.getUserId()).willReturn(userId);
         given(reservation.isLocked()).willReturn(true);
         given(reservation.getSeatId()).willReturn(seatId);
+        given(reservation.getId()).willReturn(reservationId);
 
         given(reservationRepository.findById(reservationId)).willReturn(Optional.of(reservation));
 
-        SeatEntity seatEntity = SeatEntity.builder().id(seatId).price(price).build();
+        Seat seat = Seat.builder().id(seatId).price(price).build();
         User user = User.builder().id(userId).build();
         Balance balance = Balance.builder().id(100L).userId(user.getId()).balance(10_000L).build();
 
-        given(seatJpaRepository.findById(seatId)).willReturn(Optional.of(seatEntity));
+        given(seatRepository.findById(seatId)).willReturn(Optional.of(seat));
         given(balanceRepository.findByUserIdForUpdate(userId)).willReturn(Optional.of(balance));
         given(userRepository.findById(userId)).willReturn(Optional.of(user));
 
@@ -83,6 +88,18 @@ public class ConfirmPaymentUseCaseTest {
         verify(paymentRepository).save(any(Payment.class));
         verify(balanceHistoryRepository).save(any(BalanceHistory.class));
         verify(reservationRepository).save(any(Reservation.class));
+
+        // 발생한 이벤트 캡처
+        ArgumentCaptor<ReservationConfirmedEvent> eventCaptor = ArgumentCaptor.forClass(ReservationConfirmedEvent.class);
+
+        verify(eventPublisher).publishEvent(eventCaptor.capture());
+
+        // 이벤트 검증
+        ReservationConfirmedEvent capturedEvent = eventCaptor.getValue();
+        assertThat(capturedEvent.reservationId()).isEqualTo(reservationId);
+        assertThat(capturedEvent.userId()).isEqualTo(userId);
+        assertThat(capturedEvent.seatId()).isEqualTo(seatId);
+        assertThat(capturedEvent.price()).isEqualTo(price);
     }
 
     @Test

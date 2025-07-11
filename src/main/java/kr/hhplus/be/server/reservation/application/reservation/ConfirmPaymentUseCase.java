@@ -6,6 +6,8 @@ import kr.hhplus.be.server.balanceHistory.domain.BalanceHistoryType;
 import kr.hhplus.be.server.balanceHistory.repository.BalanceHistoryRepository;
 import kr.hhplus.be.server.common.lock.DistributedLock;
 import kr.hhplus.be.server.reservation.domain.ReservationStatus;
+import kr.hhplus.be.server.reservation.domain.event.ConcertSoldOutEvent;
+import kr.hhplus.be.server.reservation.domain.event.ReservationConfirmedEvent;
 import kr.hhplus.be.server.reservation.domain.model.Balance;
 import kr.hhplus.be.server.reservation.domain.model.ConcertSchedule;
 import kr.hhplus.be.server.reservation.domain.model.Payment;
@@ -77,7 +79,15 @@ public class ConfirmPaymentUseCase {
         createPayment(reservation, seatEntity.getPrice());
         createBalanceHistory(user, seatEntity.getPrice(), balanceEntity.getBalance());
 
-        // 5. 매진 여부 확인
+        // 5. 예약 정보 전송
+        eventPublisher.publishEvent(new ReservationConfirmedEvent(
+                reservation.getId(),
+                user.getId(),
+                seatEntity.getId(),
+                seatEntity.getPrice()
+        ));
+
+        // 6. 랭킹 기록을 위한 매진 여부 확인
         if (isSoldOut(reservation.getConcertScheduleId())) {
             ConcertSchedule schedule = concertScheduleRepository.findById(reservation.getConcertScheduleId())
                     .orElseThrow(ConcertScheduleNotFoundException::new);
@@ -89,7 +99,6 @@ public class ConfirmPaymentUseCase {
             );
             eventPublisher.publishEvent(event);
         }
-
 
         expireQueueToken(userId);
     }
