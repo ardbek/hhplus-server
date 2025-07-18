@@ -46,6 +46,9 @@ dependencies {
 	// Cache
 	implementation("org.springframework.boot:spring-boot-starter-cache")
 
+	// kafka
+	implementation("org.springframework.kafka:spring-kafka")
+
 	// Lombok
 	compileOnly("org.projectlombok:lombok")
 	annotationProcessor("org.projectlombok:lombok")

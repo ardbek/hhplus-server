@@ -5,6 +5,7 @@ import kr.hhplus.be.server.balanceHistory.domain.BalanceHistory;
 import kr.hhplus.be.server.balanceHistory.domain.BalanceHistoryType;
 import kr.hhplus.be.server.balanceHistory.repository.BalanceHistoryRepository;
 import kr.hhplus.be.server.common.lock.DistributedLock;
+import kr.hhplus.be.server.reservation.application.kafka.KafkaEventProducer;
 import kr.hhplus.be.server.reservation.domain.ReservationStatus;
 import kr.hhplus.be.server.reservation.domain.event.ConcertSoldOutEvent;
 import kr.hhplus.be.server.reservation.domain.event.ReservationConfirmedEvent;
@@ -39,14 +40,14 @@ public class ConfirmPaymentUseCase {
     private final BalanceHistoryRepository balanceHistoryRepository;
     private final UserRepository userRepository;
 
-    private final ApplicationEventPublisher eventPublisher;
+    private final KafkaEventProducer kafkaEventProducer;
 
     public ConfirmPaymentUseCase(ReservationRepository reservationRepository,
             ReservationTokenRepository reservationTokenRepository,
             ConcertScheduleRepository concertScheduleRepository,
             PaymentRepository paymentRepository, BalanceRepository balanceRepository,
             SeatRepository seatRepository, BalanceHistoryRepository balanceHistoryRepository,
-            UserRepository userRepository, ApplicationEventPublisher eventPublisher) {
+            UserRepository userRepository, KafkaEventProducer kafkaEventProducer) {
         this.reservationRepository = reservationRepository;
         this.reservationTokenRepository = reservationTokenRepository;
         this.concertScheduleRepository = concertScheduleRepository;
@@ -55,7 +56,7 @@ public class ConfirmPaymentUseCase {
         this.seatRepository = seatRepository;
         this.balanceHistoryRepository = balanceHistoryRepository;
         this.userRepository = userRepository;
-        this.eventPublisher = eventPublisher;
+        this.kafkaEventProducer = kafkaEventProducer;
     }
 
     @DistributedLock(key="'seat:'+#seatId")
@@ -80,11 +81,11 @@ public class ConfirmPaymentUseCase {
         createBalanceHistory(user, seatEntity.getPrice(), balanceEntity.getBalance());
 
         // 5. 예약 정보 전송
-        eventPublisher.publishEvent(new ReservationConfirmedEvent(
-                reservation.getId(),
-                user.getId(),
-                seatEntity.getId(),
-                seatEntity.getPrice()
+        kafkaEventProducer.sendReservationConfirmedEvent(new ReservationConfirmedEvent(
+            reservation.getId(),
+            user.getId(),
+            seatEntity.getId(),
+            seatEntity.getPrice()
         ));
 
         // 6. 랭킹 기록을 위한 매진 여부 확인
@@ -97,7 +98,7 @@ public class ConfirmPaymentUseCase {
                     schedule.getConcertId(),
                     reservation.getConcertScheduleId()
             );
-            eventPublisher.publishEvent(event);
+            kafkaEventProducer.sendConcertSoldOutEvent(event);
         }
 
         expireQueueToken(userId);
