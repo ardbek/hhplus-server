@@ -1,5 +1,7 @@
-package kr.hhplus.be.server.reservation.application.reservation;
+package kr.hhplus.be.server.reservation.infrastructure.persistence.reservation.event.listener;
 
+import kr.hhplus.be.server.reservation.application.reservation.RecordSoldOutUseCase;
+import kr.hhplus.be.server.reservation.domain.event.ConcertSoldOutEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -19,11 +21,11 @@ public class SoldOutCheckListener {
     @Async
     @TransactionalEventListener
     public void handleSoldOutEvent(ConcertSoldOutEvent event) {
-        log.info("매진 이벤트 수신 완료. 랭킹 기록 시작 concertId={}, scheduleId={}", event.getConcertId(), event.getConcertScheduleId());
+        log.info("매진 이벤트 수신 완료. 랭킹 기록 시작 concertId={}, scheduleId={}", event.concertId(), event.concertScheduleId());
 
         recordSoldOutUseCase.record(
-                event.getConcertId(),
-                event.getConcertScheduleId()
+                event.concertId(),
+                event.concertScheduleId()
         );
     }
 
